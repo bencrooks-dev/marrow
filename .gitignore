@@ -24,6 +24,9 @@ dist/
 _skbuild/
 .scikit-build-core-cache/
 
+# mkdocs build output
+site/
+
 # IDE
 .idea/
 .vscode/

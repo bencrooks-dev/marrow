@@ -1,0 +1,75 @@
+# Getting started
+
+## Install
+
+```bash
+python -m venv .venv && source .venv/bin/activate
+pip install -U pip
+pip install agentcore                  # from PyPI (when published)
+# or, from source:
+pip install git+https://github.com/bencrooks-dev/agentcore
+```
+
+With real LLM providers:
+
+```bash
+pip install 'agentcore[openai]'
+pip install 'agentcore[anthropic]'
+pip install 'agentcore[ollama]'
+pip install 'agentcore[all]'
+```
+
+## Hello world
+
+```python
+from agentcore import Agent, Runtime, MockProvider
+
+rt = Runtime()
+provider = MockProvider()
+
+agent = rt.add(Agent("assistant", provider, system_prompt="Be concise."))
+agent.append_user("What is a graph database?")
+print(agent.step())
+```
+
+## Use a real provider
+
+```python
+from agentcore import Agent, Runtime
+from agentcore.providers import AnthropicProvider
+
+rt = Runtime()
+provider = AnthropicProvider(model="claude-sonnet-4-6")
+agent = rt.add(Agent("assistant", provider))
+agent.append_user("Explain graph databases in one paragraph.")
+print(agent.step())
+```
+
+## Stream the response
+
+```python
+agent.append_user("Now write a haiku about them.")
+agent.stream(on_chunk=lambda c: print(c, end="", flush=True))
+```
+
+## Add a tool
+
+```python
+from agentcore import Runtime, ToolBox, tool
+
+@tool(description="Multiply two integers.")
+def multiply(a: int, b: int) -> int:
+    return a * b
+
+rt = Runtime()
+ToolBox().add(multiply).bind(rt)
+print(rt.tools.invoke("multiply", '{"a": 6, "b": 7}'))
+# {"ok": true, "result": 42}
+```
+
+## What to read next
+
+- [Architecture](architecture.md) for the design rationale
+- [Tools](concepts/tools.md) for the full tool-registration story
+- [Providers](concepts/providers.md) for plugging in new LLMs
+- [Persistence](concepts/persistence.md) for surviving process restarts

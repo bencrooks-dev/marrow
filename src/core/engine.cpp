@@ -15,12 +15,29 @@ std::int64_t now_ms() {
 // ---------- Message ----------
 
 Message Message::make(Role role, std::string content, std::string name) {
+    if (content.size() > Message::kMaxContentBytes) {
+        throw std::runtime_error(
+            "Message content exceeds " +
+            std::to_string(Message::kMaxContentBytes) + " bytes");
+    }
     Message m;
     m.role = role;
     m.content = std::move(content);
     m.name = std::move(name);
     m.timestamp_ms = now_ms();
     return m;
+}
+
+// ---------- CancelToken ----------
+
+void CancelToken::cancel() noexcept {
+    cancelled_.store(true, std::memory_order_release);
+}
+void CancelToken::reset() noexcept {
+    cancelled_.store(false, std::memory_order_release);
+}
+bool CancelToken::cancelled() const noexcept {
+    return cancelled_.load(std::memory_order_acquire);
 }
 
 // ---------- MockProvider ----------
@@ -153,7 +170,21 @@ void AgentRouter::unregister_agent(const std::string& id) {
     std::unique_lock lock(mtx_);
     known_.erase(id);
     inboxes_.erase(id);
+    inbox_config_.erase(id);
     if (active_ && *active_ == id) active_.reset();
+}
+void AgentRouter::set_inbox_limit(const std::string& id,
+                                   std::size_t max_size,
+                                   OverflowPolicy policy) {
+    std::unique_lock lock(mtx_);
+    if (!known_.count(id))
+        throw std::runtime_error("unknown agent: " + id);
+    inbox_config_[id] = InboxConfig{max_size, policy};
+}
+std::size_t AgentRouter::inbox_size(const std::string& id) const {
+    std::shared_lock lock(mtx_);
+    auto it = inboxes_.find(id);
+    return it == inboxes_.end() ? 0 : it->second.size();
 }
 bool AgentRouter::has_agent(const std::string& id) const {
     std::shared_lock lock(mtx_);
@@ -167,7 +198,21 @@ void AgentRouter::send(const std::string& from, const std::string& to,
                        Message msg) {
     std::unique_lock lock(mtx_);
     if (!known_.count(to)) throw std::runtime_error("unknown recipient: " + to);
-    inboxes_[to].push_back(RoutedMessage{from, to, std::move(msg)});
+    auto& inbox = inboxes_[to];
+    auto cfg_it = inbox_config_.find(to);
+    if (cfg_it != inbox_config_.end() && cfg_it->second.max > 0
+        && inbox.size() >= cfg_it->second.max) {
+        switch (cfg_it->second.policy) {
+            case OverflowPolicy::Reject:
+                throw std::runtime_error("inbox full for: " + to);
+            case OverflowPolicy::DropOldest:
+                inbox.erase(inbox.begin());
+                break;
+            case OverflowPolicy::DropNewest:
+                return;  // silently drop the incoming message
+        }
+    }
+    inbox.push_back(RoutedMessage{from, to, std::move(msg)});
 }
 std::vector<RoutedMessage> AgentRouter::drain(const std::string& id) {
     std::unique_lock lock(mtx_);
@@ -246,6 +291,9 @@ void ToolRegistry::clear() {
 Engine::Engine() = default;
 
 std::shared_ptr<AgentState> Engine::create_agent(const std::string& id) {
+    if (shutdown_.load(std::memory_order_acquire)) {
+        throw std::runtime_error("engine is shutdown");
+    }
     // Hold the engine lock across router.register_agent so no other
     // thread can observe an agent in the engine map before the router
     // knows about it — without this, a concurrent send() could fail
@@ -262,6 +310,12 @@ std::shared_ptr<AgentState> Engine::agent(const std::string& id) const {
     std::shared_lock lock(mtx_);
     auto it = agents_.find(id);
     return it == agents_.end() ? nullptr : it->second;
+}
+void Engine::shutdown() noexcept {
+    shutdown_.store(true, std::memory_order_release);
+}
+bool Engine::is_shutdown() const noexcept {
+    return shutdown_.load(std::memory_order_acquire);
 }
 
 }  // namespace agentcore

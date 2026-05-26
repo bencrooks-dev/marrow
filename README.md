@@ -19,23 +19,31 @@
 
 It's designed as a deliberate alternative to Python-heavy frameworks like **LangGraph**, **CrewAI**, and **AutoGen**: the hot path runs in native C++17 with proper read-heavy locking; the orchestration surface stays in Python where iteration is cheap. Real LLM providers (OpenAI, Anthropic, Ollama) ship as Python subclasses that hook back into the C++ core through a trampoline.
 
-> **Project status: pre-alpha.** APIs are not stable. The C++ core is buildable, tested, and works on Linux / macOS / Windows × Python 3.9–3.12. Production hardening (persistence, tracing, backpressure, bounded queues, fuzz testing, published benchmarks) is on the roadmap — not done.
+> **Project status: 0.1.0, public API frozen per [`STABILITY.md`](STABILITY.md).** The C++ core is buildable, tested, and works on Linux / macOS / Windows × Python 3.9–3.12. Production primitives — timeouts, cancellation, bounded inboxes, persistence, tracing, usage tracking — all shipped. Real-world soak testing and bus-factor-of-2 are the remaining items before this should be your default choice for a live system. See [`ROADMAP.md`](ROADMAP.md).
 
-> **What "fast" means here is architectural, not measured.** We have not yet published benchmarks vs. LangGraph / CrewAI / AutoGen. Claims of throughput advantage are based on the design (native state, GIL release on provider calls, lock-friendly access patterns) and should be treated as design intent until v0.2 lands measurements.
+> **Benchmarks** — see [`benchmarks/`](benchmarks/). M-series Mac, Python 3.12: ~1.4M `AgentState.append`/s, ~672K router send+drain/s, ~64K full 3-agent pipeline iterations/s with `MockProvider`. Run `python -m benchmarks.compare_langgraph` for a head-to-head against LangGraph on a 1-node echo graph (`pip install '.[bench]'`).
 
 ---
 
 ## Highlights
 
-- **Native C++ core** — Message history, LRU cache, agent router, tool registry. C++17, `std::shared_mutex` for read-heavy access, no third-party C++ deps beyond Pybind11.
+- **Native C++ core** — Message history, LRU cache, agent router, tool registry, `CancelToken`. C++17, `std::shared_mutex` for read-heavy access, no third-party C++ deps beyond Pybind11.
 - **Ergonomic Python** — `Agent` + `Runtime` dataclass API. Two lines from import to your first generated message.
 - **Real providers** — `OpenAIProvider`, `AnthropicProvider` (with prompt caching), `OllamaProvider`. Adding a new one is a ~30-line subclass.
 - **Streaming first-class** — Every provider implements `generate_stream`. `Agent.stream(on_chunk=...)` works the same way regardless of vendor.
-- **Tools dispatched from C++** — Registry lookup and dispatch in native code; tool bodies stay in Python, so contracts can evolve without a rebuild. Tool errors are redacted before being returned to the LLM; args and results have configurable size caps.
+- **Per-call timeouts + cancellation** — Pass `timeout_ms=` and a `CancelToken` to any `step()` or `stream()` call.
+- **Backpressure** — `Router.set_inbox_limit(agent_id, max_size, policy)` with three policies (`Reject` / `DropOldest` / `DropNewest`).
+- **Graceful shutdown** — `Runtime.shutdown()` blocks new agent creation; in-flight work finishes.
+- **Persistence** — `StateStore` interface with `InMemoryStateStore` and `SQLiteStateStore`. Restart your app, resume your conversations.
+- **Observability** — `TraceSink` Protocol with `NullTraceSink` / `PrintTraceSink` / `OpenTelemetryTraceSink`. Structured logging via `agentcore.logging_config`.
+- **Usage tracking + cost estimation** — `UsageTracker` aggregates tokens per agent + model with configurable pricing tables.
+- **Retry + rate limiting** — `RetryPolicy` (exponential backoff with jitter) and `RateLimiter` (token bucket); configure once on the `Runtime` and every agent inherits them.
+- **Tools dispatched from C++** — Registry lookup and dispatch in native code; tool bodies stay in Python. Tool errors are redacted; args and results have configurable size caps.
 - **Fluent graphs, not YAML** — `Graph().start().then().finish()`. Returns a structured `GraphResult` so callers can distinguish "reached end" from "ran out of steps" — no silent truncation.
-- **Asyncio bridge** — `AsyncRuntime` wraps the C++ engine in a `ThreadPoolExecutor`. The Pybind11 bindings release the GIL on `Provider::generate` and `generate_stream`, so threaded provider calls can make concurrent progress.
-- **Thread-safe core** — `Engine`, `AgentRouter`, `AgentState`, `MemoryCache`, `ToolRegistry` are verified by [`tests/test_concurrency.py`](tests/test_concurrency.py): concurrent create+send, concurrent tool invocation, cache contention, history append/read races. CI also runs the concurrency tests under ThreadSanitizer (informational).
-- **Embeddable from C++** — The core compiles as a static library independent of Pybind11. See [`examples/embed_cpp/`](examples/embed_cpp/) for a working pure-C++ demo.
+- **Asyncio bridge** — `AsyncRuntime` wraps the C++ engine in a `ThreadPoolExecutor`. Pybind11 bindings release the GIL on `Provider::generate` and `generate_stream`, so threaded provider calls scale.
+- **Thread-safe core** — `Engine`, `AgentRouter`, `AgentState`, `MemoryCache`, `ToolRegistry` verified by [`tests/test_concurrency.py`](tests/test_concurrency.py). CI runs the suite under ThreadSanitizer (informational).
+- **Embeddable from C++** — The core compiles as a static library independent of Pybind11. See [`examples/embed_cpp/`](examples/embed_cpp/) for a pure-C++ demo.
+- **Stability promise** — Public API stable per [`STABILITY.md`](STABILITY.md) with documented semver + deprecation flow.
 - **Tiny dependency footprint** — Core requires only Pybind11. Real providers are opt-in extras.
 
 ---

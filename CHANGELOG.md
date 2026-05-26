@@ -4,6 +4,66 @@ All notable changes to `agentcore` are documented here. The format follows [Keep
 
 ## [Unreleased]
 
+## [0.1.0] — 2026-05-26
+
+The first **production-primitives release**. Five "gates" from PoC to product closed in one pass.
+
+### Added
+
+#### Production primitives
+
+- **`CancelToken`** (C++) — cooperative cancellation. Pass via `GenerationRequest.cancel_token`; providers and tools check `cancelled()` at yield points.
+- **`GenerationRequest.timeout_ms`** — wall-clock timeout providers should honor.
+- **Bounded inboxes** on `AgentRouter` — `set_inbox_limit(agent_id, max_size, policy)` with `OverflowPolicy.{Reject, DropOldest, DropNewest}`.
+- **`Engine.shutdown()`** — graceful stop. Blocks new `create_agent` calls; in-flight work on existing agents continues.
+- **`Message.kMaxContentBytes`** — 4 MiB hard cap on message content; `Message.make` throws if exceeded.
+- **`RetryPolicy`** — exponential backoff with jitter; configurable retryable / skip exception sets.
+- **`RateLimiter`** — token-bucket, thread-safe; `try_acquire` and blocking `acquire(timeout)`.
+
+#### Observability + persistence
+
+- **`StateStore` Protocol** with two impls:
+  - `InMemoryStateStore` — drop-in for tests.
+  - `SQLiteStateStore` — durable, WAL mode, per-thread connections.
+- **`restore_into(runtime, agent_id, store)`** — rehydrate history + system prompt on restart.
+- **`TraceSink` Protocol** with three sinks:
+  - `NullTraceSink` (default, zero overhead).
+  - `PrintTraceSink` (development).
+  - `OpenTelemetryTraceSink` (production; wraps an OTel tracer).
+- **`UsageTracker`** + **`UsageRecord`** — token counts per agent/model + estimated cost via configurable pricing tables.
+- **`agentcore.logging_config.configure_json`** — opt-in JSON-line structured logs on the `agentcore` logger.
+
+#### Distribution + stability
+
+- **`STABILITY.md`** — semver policy, public-API tiers (stable / experimental / internal), deprecation flow.
+- **`ROADMAP.md`** — committed v0.1–v1.0 milestones with stretch goals.
+- **PyPI publishing workflow** — `wheels.yml` now publishes to TestPyPI on `rc/a/b` tags and to PyPI on GitHub releases via trusted publishing (no token needed in secrets).
+- **`docs.yml`** workflow — builds the mkdocs site on every push to main and deploys to GitHub Pages.
+
+#### Docs
+
+- **mkdocs-material site** at `docs/` with concept pages (agents, providers, tools, graphs, async, persistence, observability), API reference auto-generated via mkdocstrings, plus mirror pages for STABILITY/SECURITY/CHANGELOG/CONTRIBUTING/ROADMAP via pymdownx snippets.
+- **Real example app** at `examples/apps/research_agent/` — 3-agent pipeline with real provider toggling, tools, tracing, usage tracking, and SQLite persistence. Resumes on restart.
+
+#### Benchmarks
+
+- **`benchmarks/`** suite: micro (`AgentState.append`, cache, router, tools), e2e (3-agent pipeline), comparison against LangGraph (separately installable via `[bench]` extra).
+- Numbers on first run (M-series Mac, Python 3.12): ~1.4M `append`/s, ~672K router send+drain/s, ~64K full 3-agent pipeline iters/s. See `benchmarks/README.md` for the full table and reproducibility notes.
+
+### Changed
+
+- **Bumped to 0.1.0.** This is a real release; install extras stabilized.
+- **`Runtime(...)` accepts new keyword args:** `rate_limiter`, `retry_policy`, `trace_sink`, `usage`. All optional with sensible defaults.
+- **Provider GIL release made consistent** — `Provider::generate` and `generate_stream` both release the GIL on the base binding (previously only `MockProvider` did).
+- **Tool error redaction** now optional via `ToolBox(error_redactor=...)`; default strips paths + `sk-` / `Bearer ` prefixes.
+- **Schema generator** handles `Optional`, `Union`, `list[X]`, `dict`, `Literal[...]`.
+- **`Agent.step()` and `Agent.stream()` accept `temperature`, `timeout_ms`, `cancel_token`.**
+- **`Graph.run` returns `GraphResult`** and raises `GraphExhausted` on `max_steps` instead of silently truncating.
+
+### Fixed
+
+(Cumulative; see prior versions for individual entries.)
+
 ### Fixed
 
 - **Critical: GIL race in `ToolRegistry::invoke`.** The Pybind11 binding previously declared `py::call_guard<py::gil_scoped_release>` while the C++ implementation copies a `std::function` that captures a `py::function`. The copy increments a `PyObject` refcount, which is undefined behavior in CPython without the GIL held. Removed the `call_guard`; the GIL is now held through invocation (which is correct since tools run Python anyway).

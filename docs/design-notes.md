@@ -96,18 +96,18 @@ Crucially: because `Provider::generate` releases the GIL, multiple worker thread
 
 `AgentState`, `AgentRouter`, `Engine`, `ToolRegistry` all use `std::shared_mutex`. Reads massively outnumber writes in agent workflows (every step reads history; only step boundaries write to it). `MemoryCache` uses a plain `mutex` because LRU touches mutate order on read — `shared_mutex` would be incorrect.
 
-### Inboxes are unbounded
+### Inboxes are bounded by opt-in
 
-Production systems will need bounded inboxes with a drop / block / DLQ policy. Right now `AgentRouter::send` is non-blocking and just appends. This is a known PoC limitation.
+`AgentRouter` inboxes are unbounded by default (preserving zero-overhead in test scenarios) but support three overflow policies — `Reject` / `DropOldest` / `DropNewest` — via `set_inbox_limit(agent_id, max_size, policy)`. Production users should set a limit. The default is intentionally lax so tests don't have to think about it.
 
-### Streaming is not in the binding yet
+### Streaming is in the binding
 
-`Provider::generate` returns a complete response. A streaming version (`generate_stream(req, callback)`) is a small addition — the callback would be a `py::function` invoked from C++ with the GIL re-acquired, similar to how tools work. Punted for v0.1.
+`Provider::generate_stream(req, on_chunk)` is part of the base interface; the trampoline lets Python subclasses override it. `Agent.stream(on_chunk=...)` is the user-facing entry point. See `examples/streaming_example.py`.
 
-### No persistence
+### Persistence is opt-in
 
-State is in-memory only. A `StateStore` interface (in-memory default + SQLite impl) is a planned v0.2 addition.
+`StateStore` is a Protocol with `InMemoryStateStore` and `SQLiteStateStore` implementations. Callers decide when to snapshot. The example app at `examples/apps/research_agent/` demonstrates save+restore against SQLite.
 
-### No tracing
+### Tracing is opt-in
 
-Important and missing. A `TraceSink` interface with span events (`agent.step`, `provider.generate`, `tool.invoke`) belongs in the C++ core so it can capture timing across the boundary. Planned for v0.2.
+`TraceSink` is a Protocol with `NullTraceSink` (default, zero overhead), `PrintTraceSink`, and `OpenTelemetryTraceSink`. The SDK emits an `agent.step` span around every `Agent.step()`. Adding more spans inside C++ is a v0.2 item; the interface is in place.

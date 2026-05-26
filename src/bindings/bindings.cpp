@@ -57,12 +57,25 @@ PYBIND11_MODULE(_agentcore, m) {
                    "'>";
         });
 
+    py::class_<CancelToken, std::shared_ptr<CancelToken>>(m, "CancelToken")
+        .def(py::init<>())
+        .def("cancel",    &CancelToken::cancel)
+        .def("reset",     &CancelToken::reset)
+        .def("cancelled", &CancelToken::cancelled);
+
+    py::enum_<OverflowPolicy>(m, "OverflowPolicy")
+        .value("Reject",     OverflowPolicy::Reject)
+        .value("DropOldest", OverflowPolicy::DropOldest)
+        .value("DropNewest", OverflowPolicy::DropNewest);
+
     py::class_<GenerationRequest>(m, "GenerationRequest")
         .def(py::init<>())
-        .def_readwrite("model",       &GenerationRequest::model)
-        .def_readwrite("messages",    &GenerationRequest::messages)
-        .def_readwrite("temperature", &GenerationRequest::temperature)
-        .def_readwrite("max_tokens",  &GenerationRequest::max_tokens);
+        .def_readwrite("model",        &GenerationRequest::model)
+        .def_readwrite("messages",     &GenerationRequest::messages)
+        .def_readwrite("temperature",  &GenerationRequest::temperature)
+        .def_readwrite("max_tokens",   &GenerationRequest::max_tokens)
+        .def_readwrite("timeout_ms",   &GenerationRequest::timeout_ms)
+        .def_readwrite("cancel_token", &GenerationRequest::cancel_token);
 
     py::class_<GenerationResponse>(m, "GenerationResponse")
         .def(py::init<>())
@@ -123,6 +136,10 @@ PYBIND11_MODULE(_agentcore, m) {
         .def("unregister_agent", &AgentRouter::unregister_agent)
         .def("has_agent",        &AgentRouter::has_agent)
         .def("agents",           &AgentRouter::agents)
+        .def("set_inbox_limit",  &AgentRouter::set_inbox_limit,
+             py::arg("agent_id"), py::arg("max_size"),
+             py::arg("policy") = OverflowPolicy::Reject)
+        .def("inbox_size",       &AgentRouter::inbox_size)
         .def("send",             &AgentRouter::send,
              py::arg("from"), py::arg("to"), py::arg("msg"))
         .def("drain",            &AgentRouter::drain)
@@ -181,6 +198,8 @@ PYBIND11_MODULE(_agentcore, m) {
         .def(py::init<>())
         .def("create_agent", &Engine::create_agent)
         .def("agent",        &Engine::agent)
+        .def("shutdown",     &Engine::shutdown)
+        .def("is_shutdown",  &Engine::is_shutdown)
         .def_property_readonly("router", &Engine::router,
                                py::return_value_policy::reference_internal)
         .def_property_readonly("cache",  &Engine::cache,

@@ -1,0 +1,88 @@
+site_name: agentcore
+site_description: Lightweight C++ core for AI agent orchestration
+site_url: https://bencrooks-dev.github.io/agentcore/
+repo_url: https://github.com/bencrooks-dev/agentcore
+repo_name: bencrooks-dev/agentcore
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - navigation.tracking
+    - content.code.copy
+    - content.code.annotate
+    - search.suggest
+    - search.highlight
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [python]
+          options:
+            show_source: true
+            show_root_heading: true
+            docstring_style: google
+            members_order: source
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.snippets:
+      check_paths: true
+      base_path:
+        - .
+  - toc:
+      permalink: true
+  - attr_list
+
+nav:
+  - Home: index.md
+  - Getting started: getting-started.md
+  - Architecture: architecture.md
+  - Concepts:
+    - Agents and Runtime: concepts/agents.md
+    - Providers: concepts/providers.md
+    - Tools: concepts/tools.md
+    - Graphs: concepts/graphs.md
+    - Async: concepts/async.md
+    - Persistence: concepts/persistence.md
+    - Observability: concepts/observability.md
+  - Production:
+    - Stability policy: stability.md
+    - Security: security.md
+    - Benchmarks: benchmarks.md
+  - API reference:
+    - agentcore: api/agentcore.md
+    - agentcore.providers: api/providers.md
+  - Project:
+    - Roadmap: roadmap.md
+    - Contributing: contributing.md
+    - Changelog: changelog.md
+    - Design notes: design-notes.md

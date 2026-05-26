@@ -66,3 +66,47 @@ jobs:
         with:
           name: dist-all
           path: dist/*
+
+  publish_testpypi:
+    name: Publish to TestPyPI
+    needs: collect
+    runs-on: ubuntu-latest
+    # Only on release-candidate tags (e.g. v0.1.0rc1, v0.1.0a3).
+    if: |
+      github.event_name == 'push' &&
+      contains(github.ref_name, 'rc') ||
+      contains(github.ref_name, 'a') ||
+      contains(github.ref_name, 'b')
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/p/agentcore
+    permissions:
+      id-token: write   # trusted publishing
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist-all
+          path: dist
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+
+  publish_pypi:
+    name: Publish to PyPI
+    needs: collect
+    runs-on: ubuntu-latest
+    # Only on full release tags (e.g. v0.1.0, v1.2.3) — no pre-release suffixes.
+    if: |
+      github.event_name == 'release' &&
+      github.event.action == 'published'
+    environment:
+      name: pypi
+      url: https://pypi.org/p/agentcore
+    permissions:
+      id-token: write   # trusted publishing
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist-all
+          path: dist
+      - uses: pypa/gh-action-pypi-publish@release/v1
