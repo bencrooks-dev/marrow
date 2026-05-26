@@ -13,6 +13,11 @@ jobs:
   test:
     name: Test ${{ matrix.os }} / py${{ matrix.python }}
     runs-on: ${{ matrix.os }}
+    env:
+      # Ensure UTF-8 stdout on Windows runners (cp1252 chokes on Unicode in
+      # example output even when tests themselves don't print non-ASCII).
+      PYTHONUTF8: "1"
+      PYTHONIOENCODING: "utf-8"
     strategy:
       fail-fast: false
       matrix:
