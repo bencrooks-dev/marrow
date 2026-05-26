@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.tox/
+.venv/
+venv/
+env/
+
+# Built extension artifacts
+build/
+dist/
+*.so
+*.dylib
+*.dll
+*.pyd
+
+# scikit-build
+_skbuild/
+.scikit-build-core-cache/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# CMake
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+compile_commands.json
