@@ -46,11 +46,23 @@ struct GenerationResponse {
     int completion_tokens = 0;
 };
 
+// Token callback for streaming. Invoked once per chunk; whole content
+// can be reconstructed by concatenating chunks.
+using StreamCallback = std::function<void(const std::string&)>;
+
 class Provider {
 public:
     virtual ~Provider() = default;
     virtual std::string name() const = 0;
     virtual GenerationResponse generate(const GenerationRequest& req) = 0;
+
+    // Default: call generate and emit content as a single chunk. Real
+    // streaming providers (OpenAI/Anthropic SSE) override this.
+    virtual void generate_stream(const GenerationRequest& req,
+                                 StreamCallback on_chunk) {
+        GenerationResponse r = generate(req);
+        on_chunk(r.content);
+    }
 };
 
 class MockProvider : public Provider {
@@ -58,6 +70,10 @@ public:
     explicit MockProvider(std::string name = "mock");
     std::string name() const override { return name_; }
     GenerationResponse generate(const GenerationRequest& req) override;
+    // Splits the mock response into word-sized chunks so streaming
+    // demos and tests have something visible to consume.
+    void generate_stream(const GenerationRequest& req,
+                         StreamCallback on_chunk) override;
 private:
     std::string name_;
 };

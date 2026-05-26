@@ -39,12 +39,12 @@ class Agent:
     def append_tool(self, tool_name: str, text: str) -> None:
         self._state.append(_msg(Role.Tool, text, tool_name))
 
-    def step(
+    def _build_request(
         self,
-        model: str = "mock",
-        max_tokens: int = 512,
-        trim_to: Optional[int] = None,
-    ) -> str:
+        model: str,
+        max_tokens: int,
+        trim_to: Optional[int],
+    ) -> "_c.GenerationRequest":
         req = _c.GenerationRequest()
         req.model = model
         req.max_tokens = max_tokens
@@ -52,9 +52,41 @@ class Agent:
         if self.system_prompt:
             msgs.insert(0, _msg(Role.System, self.system_prompt))
         req.messages = msgs
+        return req
+
+    def step(
+        self,
+        model: str = "mock",
+        max_tokens: int = 512,
+        trim_to: Optional[int] = None,
+    ) -> str:
+        req = self._build_request(model, max_tokens, trim_to)
         resp = self.provider.generate(req)
         self.append_assistant(resp.content)
         return resp.content
+
+    def stream(
+        self,
+        model: str = "mock",
+        max_tokens: int = 512,
+        trim_to: Optional[int] = None,
+        on_chunk: Optional[callable] = None,
+    ) -> str:
+        """Streaming variant of `step`. Collects chunks into the final
+        assistant message and returns the full text. Each chunk is also
+        forwarded to `on_chunk` if provided."""
+        req = self._build_request(model, max_tokens, trim_to)
+        chunks: list[str] = []
+
+        def collect(chunk: str) -> None:
+            chunks.append(chunk)
+            if on_chunk is not None:
+                on_chunk(chunk)
+
+        self.provider.generate_stream(req, collect)
+        full = "".join(chunks)
+        self.append_assistant(full)
+        return full
 
 
 class Runtime:

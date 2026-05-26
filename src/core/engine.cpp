@@ -40,6 +40,20 @@ GenerationResponse MockProvider::generate(const GenerationRequest& req) {
     return r;
 }
 
+void MockProvider::generate_stream(const GenerationRequest& req,
+                                   StreamCallback on_chunk) {
+    GenerationResponse r = generate(req);
+    std::string buf;
+    for (char c : r.content) {
+        buf += c;
+        if (c == ' ') {
+            on_chunk(buf);
+            buf.clear();
+        }
+    }
+    if (!buf.empty()) on_chunk(buf);
+}
+
 // ---------- AgentState ----------
 
 AgentState::AgentState(std::string id) : id_(std::move(id)) {}

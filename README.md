@@ -1,5 +1,9 @@
 # agentcore
 
+[![CI](https://github.com/bencrooks-dev/agentcore/actions/workflows/ci.yml/badge.svg)](https://github.com/bencrooks-dev/agentcore/actions/workflows/ci.yml)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/python-3.9%20%7C%203.10%20%7C%203.11%20%7C%203.12-blue.svg)](pyproject.toml)
+
 A lightweight C++ core for AI agent orchestration, exposed to Python via Pybind11.
 
 Designed as a high-performance, ultra-thin alternative to Python-heavy frameworks (LangGraph, CrewAI, AutoGen). The hot path — state, history, cache, routing, tool dispatch — runs in native C++. The ergonomic API is in Python.
@@ -56,6 +60,36 @@ print(writer.step())
 - `examples/tools_example.py` — Python tools through the C++ registry
 - `examples/graph_example.py` — three-agent graph (researcher → writer → editor)
 - `examples/async_example.py` — concurrent agent steps via asyncio
+- `examples/streaming_example.py` — token-by-token streaming via `Agent.stream()`
+- `examples/openai_example.py` — real OpenAI provider (needs `OPENAI_API_KEY`)
+- `examples/anthropic_example.py` — real Anthropic provider with prompt caching
+
+## Real providers
+
+```bash
+pip install 'agentcore[openai]'      # OpenAI Chat Completions
+pip install 'agentcore[anthropic]'   # Anthropic Messages (with prompt caching)
+pip install 'agentcore[ollama]'      # local Ollama daemon
+pip install 'agentcore[all]'         # all of the above
+```
+
+```python
+from agentcore import Agent, Runtime
+from agentcore.providers import AnthropicProvider
+
+rt = Runtime()
+provider = AnthropicProvider(model="claude-sonnet-4-6")  # caches the system prompt
+agent = rt.add(Agent("assistant", provider, system_prompt="Be concise."))
+agent.append_user("What is a graph database?")
+print(agent.step())
+```
+
+Streaming works through the same `Provider` interface — every provider above implements `generate_stream`:
+
+```python
+agent.append_user("Write a haiku.")
+agent.stream(on_chunk=lambda c: print(c, end="", flush=True))
+```
 
 ## Tests
 

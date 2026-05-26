@@ -26,6 +26,10 @@ public:
     GenerationResponse generate(const GenerationRequest& req) override {
         PYBIND11_OVERRIDE_PURE(GenerationResponse, Provider, generate, req);
     }
+    void generate_stream(const GenerationRequest& req,
+                         StreamCallback on_chunk) override {
+        PYBIND11_OVERRIDE(void, Provider, generate_stream, req, on_chunk);
+    }
 };
 
 PYBIND11_MODULE(_agentcore, m) {
@@ -68,14 +72,18 @@ PYBIND11_MODULE(_agentcore, m) {
 
     py::class_<Provider, PyProvider, std::shared_ptr<Provider>>(m, "Provider")
         .def(py::init<>())
-        .def("name",     &Provider::name)
-        .def("generate", &Provider::generate);
+        .def("name",            &Provider::name)
+        .def("generate",        &Provider::generate)
+        .def("generate_stream", &Provider::generate_stream,
+             py::arg("req"), py::arg("on_chunk"));
 
     py::class_<MockProvider, Provider, std::shared_ptr<MockProvider>>(m, "MockProvider")
         .def(py::init<std::string>(), py::arg("name") = "mock")
-        .def("name",     &MockProvider::name)
-        .def("generate", &MockProvider::generate,
-             py::call_guard<py::gil_scoped_release>());
+        .def("name",            &MockProvider::name)
+        .def("generate",        &MockProvider::generate,
+             py::call_guard<py::gil_scoped_release>())
+        .def("generate_stream", &MockProvider::generate_stream,
+             py::arg("req"), py::arg("on_chunk"));
 
     py::class_<AgentState, std::shared_ptr<AgentState>>(m, "AgentState")
         .def_property_readonly("id", &AgentState::id)

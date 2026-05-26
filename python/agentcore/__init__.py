@@ -1,6 +1,7 @@
 """agentcore — lightweight C++ core for AI agent orchestration."""
 
 from . import _agentcore as _c
+from . import providers
 
 from .sdk import Agent, Runtime, MockProvider, PyProviderBase
 from .tools import tool, ToolBox
@@ -28,6 +29,7 @@ __all__ = [
     "AsyncAgent",
     "AsyncRuntime",
     "to_thread",
+    "providers",
 ]
 
-__version__ = "0.0.1"
+__version__ = "0.0.2"
