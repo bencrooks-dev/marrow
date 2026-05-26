@@ -27,12 +27,12 @@ classifiers = [
 [project.optional-dependencies]
 test = ["pytest>=8.4.2", "pytest-cov>=4"]
 openai = ["openai>=1.40"]
-anthropic = ["anthropic>=0.40"]
+anthropic = ["anthropic>=0.104.1"]
 ollama = ["httpx>=0.28.1"]
 otel = ["opentelemetry-api>=1.25", "opentelemetry-sdk>=1.25"]
 all = [
   "openai>=1.40",
-  "anthropic>=0.40",
+  "anthropic>=0.104.1",
   "httpx>=0.28.1",
   "opentelemetry-api>=1.25",
   "opentelemetry-sdk>=1.25",
