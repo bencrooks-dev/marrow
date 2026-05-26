@@ -1,0 +1,27 @@
+version: 2
+updates:
+  # Keep GitHub Actions versions current.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "ci"
+
+  # Python build deps and optional provider SDKs.
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+    ignore:
+      # Pin scikit-build-core ourselves; surprise minor bumps have
+      # historically broken editable installs on Windows.
+      - dependency-name: "scikit-build-core"
+        update-types: ["version-update:semver-minor"]

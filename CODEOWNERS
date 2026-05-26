@@ -1,0 +1,17 @@
+# Default owner for all files. Add more rules below as the project grows.
+*                       @bencrooks-dev
+
+# C++ core and bindings — performance-critical, requires C++/Pybind11 fluency.
+/src/                   @bencrooks-dev
+
+# Build, CI, release workflows.
+/CMakeLists.txt         @bencrooks-dev
+/pyproject.toml         @bencrooks-dev
+/.github/workflows/     @bencrooks-dev
+
+# Documentation and policy.
+/README.md              @bencrooks-dev
+/CONTRIBUTING.md        @bencrooks-dev
+/SECURITY.md            @bencrooks-dev
+/CHANGELOG.md           @bencrooks-dev
+/docs/                  @bencrooks-dev

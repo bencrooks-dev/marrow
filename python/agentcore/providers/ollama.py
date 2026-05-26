@@ -6,13 +6,11 @@ No API key needed; defaults to http://localhost:11434.
 from __future__ import annotations
 
 import json
-from typing import Optional
 
 import httpx
 
 from .. import _agentcore as _c
 from ..sdk import PyProviderBase
-
 
 _ROLE_MAP = {
     _c.Role.System: "system",

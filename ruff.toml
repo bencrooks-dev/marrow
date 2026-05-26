@@ -1,0 +1,26 @@
+target-version = "py39"
+line-length = 100
+
+[lint]
+# Pragmatic selection — catch real bugs, leave style alone.
+select = [
+  "E",    # pycodestyle errors
+  "F",    # pyflakes (undefined names, unused imports, ...)
+  "B",    # flake8-bugbear (likely bugs)
+  "UP",   # pyupgrade (Python 3.9+ idioms)
+  "I",    # isort import order
+  "SIM",  # flake8-simplify
+]
+ignore = [
+  "E501",   # line length is enforced by formatter, not linter
+  "B008",   # function call in argument default (we use this deliberately)
+  "SIM108", # ternary if-else style — case by case
+]
+
+[lint.per-file-ignores]
+"examples/*.py" = ["F401"]    # examples may import for documentation effect
+"tests/*.py"    = ["B011"]    # tests use plain asserts deliberately
+"__init__.py"   = ["F401"]    # re-export shims
+
+[lint.isort]
+known-first-party = ["agentcore"]

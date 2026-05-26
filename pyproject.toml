@@ -4,7 +4,7 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "agentcore"
-version = "0.0.2"
+version = "0.0.3"
 description = "Lightweight C++ core for AI agent orchestration"
 readme = "README.md"
 requires-python = ">=3.9"

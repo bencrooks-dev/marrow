@@ -70,11 +70,19 @@ PYBIND11_MODULE(_agentcore, m) {
         .def_readwrite("prompt_tokens",     &GenerationResponse::prompt_tokens)
         .def_readwrite("completion_tokens", &GenerationResponse::completion_tokens);
 
+    // call_guard releases the GIL during generate/generate_stream so other
+    // Python threads can make progress. The PYBIND11_OVERRIDE_* macros in
+    // the PyProvider trampoline re-acquire the GIL when calling back into
+    // Python — this is required for correctness when a Python subclass
+    // (OpenAIProvider, AnthropicProvider, etc.) is invoked from a worker
+    // thread via AsyncRuntime.
     py::class_<Provider, PyProvider, std::shared_ptr<Provider>>(m, "Provider")
         .def(py::init<>())
         .def("name",            &Provider::name)
-        .def("generate",        &Provider::generate)
+        .def("generate",        &Provider::generate,
+             py::call_guard<py::gil_scoped_release>())
         .def("generate_stream", &Provider::generate_stream,
+             py::call_guard<py::gil_scoped_release>(),
              py::arg("req"), py::arg("on_chunk"));
 
     py::class_<MockProvider, Provider, std::shared_ptr<MockProvider>>(m, "MockProvider")
@@ -83,6 +91,7 @@ PYBIND11_MODULE(_agentcore, m) {
         .def("generate",        &MockProvider::generate,
              py::call_guard<py::gil_scoped_release>())
         .def("generate_stream", &MockProvider::generate_stream,
+             py::call_guard<py::gil_scoped_release>(),
              py::arg("req"), py::arg("on_chunk"));
 
     py::class_<AgentState, std::shared_ptr<AgentState>>(m, "AgentState")
@@ -131,21 +140,43 @@ PYBIND11_MODULE(_agentcore, m) {
         .def("register",
              [](ToolRegistry& self, std::string name, std::string description,
                 std::string schema, py::function fn) {
-                 ToolFn wrapped = [fn = std::move(fn)](const std::string& args) -> std::string {
-                     py::gil_scoped_acquire gil;
-                     py::object result = fn(args);
-                     return py::cast<std::string>(result);
-                 };
+                 // Hold the py::function in a shared_ptr whose deleter
+                 // acquires the GIL. This makes the captured function
+                 // safe to destruct from any thread (including a worker
+                 // thread that doesn't hold the GIL, or interpreter
+                 // shutdown). Copying the lambda copies the shared_ptr
+                 // (atomic refcount, no GIL required), not the py::function.
+                 auto fn_holder = std::shared_ptr<py::function>(
+                     new py::function(std::move(fn)),
+                     [](py::function* p) {
+                         py::gil_scoped_acquire gil;
+                         delete p;
+                     });
+                 ToolFn wrapped =
+                     [fn_holder = std::move(fn_holder)](const std::string& args) -> std::string {
+                         py::gil_scoped_acquire gil;
+                         py::object result = (*fn_holder)(args);
+                         return py::cast<std::string>(result);
+                     };
                  self.register_tool(ToolSpec{
                      std::move(name), std::move(description),
                      std::move(schema), std::move(wrapped)});
              },
              py::arg("name"), py::arg("description") = "",
              py::arg("schema") = "{}", py::arg("fn"))
+        // NOTE: no gil_scoped_release here.
+        // Tools registered from Python are stored as std::function objects
+        // that capture a py::function by value. Copying the std::function
+        // (which `invoke` does to release the registry lock before calling)
+        // copies the captured py::function, which increments a PyObject
+        // refcount — that operation requires the GIL. Tools run Python
+        // bodies anyway, so releasing/re-acquiring would save nothing.
         .def("invoke", &ToolRegistry::invoke,
-             py::call_guard<py::gil_scoped_release>(),
              py::arg("name"), py::arg("args_json"));
 
+    // reference_internal returns by reference and keeps the Engine alive
+    // for as long as the returned handle is alive — defends against
+    // `r = engine.router; del engine; r.send(...)` use-after-free.
     py::class_<Engine>(m, "Engine")
         .def(py::init<>())
         .def("create_agent", &Engine::create_agent)

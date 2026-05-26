@@ -2,11 +2,11 @@
 
 from . import _agentcore as _c
 from . import providers
-
-from .sdk import Agent, Runtime, MockProvider, PyProviderBase
-from .tools import tool, ToolBox
-from .graph import Graph, run as run_graph
 from .asyncio_bridge import AsyncAgent, AsyncRuntime, to_thread
+from .graph import Graph, GraphExhausted, GraphResult
+from .graph import run as run_graph
+from .sdk import Agent, MockProvider, PyProviderBase, Runtime
+from .tools import ToolBox, tool
 
 Role = _c.Role
 Message = _c.Message
@@ -25,6 +25,8 @@ __all__ = [
     "tool",
     "ToolBox",
     "Graph",
+    "GraphResult",
+    "GraphExhausted",
     "run_graph",
     "AsyncAgent",
     "AsyncRuntime",
@@ -32,4 +34,4 @@ __all__ = [
     "providers",
 ]
 
-__version__ = "0.0.2"
+__version__ = "0.0.3"

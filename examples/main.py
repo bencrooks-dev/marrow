@@ -1,5 +1,5 @@
 """Two-agent pipeline: Researcher hands findings to Writer."""
-from agentcore import Agent, Runtime, MockProvider
+from agentcore import Agent, MockProvider, Runtime
 
 
 def main() -> None:

@@ -1,5 +1,5 @@
 """Smoke tests — module imports, two-agent pipeline runs."""
-from agentcore import Agent, MockProvider, Role, Runtime
+from agentcore import Agent, MockProvider, Runtime
 
 
 def test_module_imports():

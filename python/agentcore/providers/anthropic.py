@@ -10,13 +10,11 @@ the cache; subsequent calls hit it.
 from __future__ import annotations
 
 import os
-from typing import Optional
 
 from anthropic import Anthropic
 
 from .. import _agentcore as _c
 from ..sdk import PyProviderBase
-
 
 _CHAT_ROLE_MAP = {
     _c.Role.User: "user",
@@ -30,8 +28,8 @@ class AnthropicProvider(PyProviderBase):
     def __init__(
         self,
         model: str = "claude-sonnet-4-6",
-        api_key: Optional[str] = None,
-        client: Optional[Anthropic] = None,
+        api_key: str | None = None,
+        client: Anthropic | None = None,
         enable_prompt_cache: bool = True,
     ) -> None:
         super().__init__()
@@ -81,10 +79,26 @@ class AnthropicProvider(PyProviderBase):
                 kwargs["system"] = system
         return kwargs
 
+    @staticmethod
+    def _extract_text(content_blocks) -> str:
+        """Concatenate text from all TextBlock entries; ignore tool_use
+        and other non-text blocks (we don't process tool calls in v0)."""
+        if not content_blocks:
+            return ""
+        parts = []
+        for block in content_blocks:
+            # SDK returns objects with a `type` attribute; "text" blocks
+            # have a `.text` attribute. tool_use, etc. have no `.text`.
+            if getattr(block, "type", None) == "text":
+                parts.append(getattr(block, "text", ""))
+            elif hasattr(block, "text"):
+                parts.append(block.text)
+        return "".join(parts)
+
     def generate(self, req):
         resp = self._client.messages.create(**self._build_kwargs(req))
         out = _c.GenerationResponse()
-        out.content = resp.content[0].text if resp.content else ""
+        out.content = self._extract_text(resp.content)
         out.prompt_tokens = resp.usage.input_tokens
         out.completion_tokens = resp.usage.output_tokens
         return out

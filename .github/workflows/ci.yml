@@ -10,6 +10,17 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  lint:
+    name: Lint (ruff)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install ruff
+      - run: ruff check python/ tests/ examples/
+
   test:
     name: Test ${{ matrix.os }} / py${{ matrix.python }}
     runs-on: ${{ matrix.os }}
@@ -36,11 +47,11 @@ jobs:
           python -m pip install -U pip
           python -m pip install cmake pybind11 scikit-build-core
 
-      - name: Install package (editable)
-        run: python -m pip install -e ".[test]" -v
+      - name: Install package (editable, with coverage)
+        run: python -m pip install -e ".[test]" coverage pytest-cov -v
 
-      - name: Run tests
-        run: pytest -v
+      - name: Run tests with coverage
+        run: pytest -v --cov=agentcore --cov-report=term-missing
 
       - name: Run examples (smoke)
         shell: bash
@@ -50,3 +61,35 @@ jobs:
           python examples/graph_example.py
           python examples/streaming_example.py
           python examples/async_example.py
+
+  tsan:
+    name: ThreadSanitizer (concurrency tests)
+    runs-on: ubuntu-latest
+    continue-on-error: true   # informational until suppressions stabilize
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install build deps
+        run: |
+          python -m pip install -U pip
+          python -m pip install cmake pybind11 scikit-build-core pytest
+      - name: Build with TSan
+        env:
+          CMAKE_BUILD_TYPE: RelWithDebInfo
+          CXXFLAGS: "-fsanitize=thread -fPIC -fno-omit-frame-pointer -g -O1"
+          LDFLAGS: "-fsanitize=thread"
+        run: python -m pip install -e . -v
+      - name: Run concurrency tests under TSan
+        env:
+          TSAN_OPTIONS: "halt_on_error=0 second_deadlock_stack=1 history_size=7"
+          LD_PRELOAD: ""
+        run: pytest tests/test_concurrency.py -v 2>&1 | tee tsan.log
+      - name: Surface TSan warnings
+        if: always()
+        run: |
+          if grep -q "WARNING: ThreadSanitizer" tsan.log; then
+            echo "::warning::ThreadSanitizer reported races; see tsan.log"
+            grep -A 20 "WARNING: ThreadSanitizer" tsan.log || true
+          fi

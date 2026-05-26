@@ -246,15 +246,17 @@ void ToolRegistry::clear() {
 Engine::Engine() = default;
 
 std::shared_ptr<AgentState> Engine::create_agent(const std::string& id) {
-    std::shared_ptr<AgentState> state;
-    {
-        std::unique_lock lock(mtx_);
-        auto [it, inserted] = agents_.try_emplace(id);
-        if (inserted) it->second = std::make_shared<AgentState>(id);
-        state = it->second;
-    }
+    // Hold the engine lock across router.register_agent so no other
+    // thread can observe an agent in the engine map before the router
+    // knows about it — without this, a concurrent send() could fail
+    // with "unknown recipient" right after create_agent returned.
+    // Safe because AgentRouter never calls back into Engine (no
+    // inverse lock order → no deadlock risk).
+    std::unique_lock lock(mtx_);
+    auto [it, inserted] = agents_.try_emplace(id);
+    if (inserted) it->second = std::make_shared<AgentState>(id);
     router_.register_agent(id);
-    return state;
+    return it->second;
 }
 std::shared_ptr<AgentState> Engine::agent(const std::string& id) const {
     std::shared_lock lock(mtx_);

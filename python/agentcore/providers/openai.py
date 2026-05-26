@@ -5,13 +5,11 @@ Requires: ``pip install 'agentcore[openai]'``
 from __future__ import annotations
 
 import os
-from typing import Optional
 
 from openai import OpenAI
 
 from .. import _agentcore as _c
 from ..sdk import PyProviderBase
-
 
 _ROLE_MAP = {
     _c.Role.System: "system",
@@ -27,9 +25,9 @@ class OpenAIProvider(PyProviderBase):
     def __init__(
         self,
         model: str = "gpt-4o-mini",
-        api_key: Optional[str] = None,
-        client: Optional[OpenAI] = None,
-        base_url: Optional[str] = None,
+        api_key: str | None = None,
+        client: OpenAI | None = None,
+        base_url: str | None = None,
     ) -> None:
         super().__init__()
         self._model = model

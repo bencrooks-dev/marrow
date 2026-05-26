@@ -13,18 +13,32 @@ changed here stays the same — only the implementation moves.
 from __future__ import annotations
 
 import asyncio
+import atexit
 import concurrent.futures
 from functools import partial
-from typing import Any, Awaitable, Callable, Dict, Optional
+from typing import Any, Callable
+
+_DEFAULT_EXECUTOR = concurrent.futures.ThreadPoolExecutor(
+    max_workers=8, thread_name_prefix="agentcore-async"
+)
 
 
-_DEFAULT_EXECUTOR = concurrent.futures.ThreadPoolExecutor(max_workers=8)
+@atexit.register
+def _shutdown_default_executor() -> None:
+    # On some platforms (notably Windows) leaving worker threads alive
+    # at interpreter exit can hang. Shutdown is non-blocking; in-flight
+    # work is allowed to finish but no new work is accepted.
+    _DEFAULT_EXECUTOR.shutdown(wait=False)
 
 
 def set_executor(executor: concurrent.futures.Executor) -> None:
-    """Override the default executor (useful for tests / pool tuning)."""
+    """Override the default executor (useful for tests / pool tuning).
+
+    The previous executor is shut down to release its worker threads."""
     global _DEFAULT_EXECUTOR
+    old = _DEFAULT_EXECUTOR
     _DEFAULT_EXECUTOR = executor
+    old.shutdown(wait=False)
 
 
 async def to_thread(fn: Callable[..., Any], *args, **kwargs) -> Any:
@@ -76,7 +90,7 @@ class AsyncRuntime:
         during the provider call, so this scales with the executor pool."""
         return await asyncio.gather(*(a.step() for a in agents))
 
-    def handoff(self, frm: str, to: str, text: Optional[str] = None) -> bool:
+    def handoff(self, frm: str, to: str, text: str | None = None) -> bool:
         return self._rt.handoff(frm, to, text)
 
     def deliver(self, agent: AsyncAgent) -> int:

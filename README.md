@@ -19,7 +19,9 @@
 
 It's designed as a deliberate alternative to Python-heavy frameworks like **LangGraph**, **CrewAI**, and **AutoGen**: the hot path runs in native C++17 with proper read-heavy locking; the orchestration surface stays in Python where iteration is cheap. Real LLM providers (OpenAI, Anthropic, Ollama) ship as Python subclasses that hook back into the C++ core through a trampoline.
 
-> **Project status: pre-alpha.** APIs are not stable. The C++ core is buildable, tested, and works on Linux / macOS / Windows × Python 3.9–3.12. Production hardening (persistence, tracing, backpressure, bounded queues, fuzz testing) is on the roadmap — not done.
+> **Project status: pre-alpha.** APIs are not stable. The C++ core is buildable, tested, and works on Linux / macOS / Windows × Python 3.9–3.12. Production hardening (persistence, tracing, backpressure, bounded queues, fuzz testing, published benchmarks) is on the roadmap — not done.
+
+> **What "fast" means here is architectural, not measured.** We have not yet published benchmarks vs. LangGraph / CrewAI / AutoGen. Claims of throughput advantage are based on the design (native state, GIL release on provider calls, lock-friendly access patterns) and should be treated as design intent until v0.2 lands measurements.
 
 ---
 
@@ -29,10 +31,11 @@ It's designed as a deliberate alternative to Python-heavy frameworks like **Lang
 - **Ergonomic Python** — `Agent` + `Runtime` dataclass API. Two lines from import to your first generated message.
 - **Real providers** — `OpenAIProvider`, `AnthropicProvider` (with prompt caching), `OllamaProvider`. Adding a new one is a ~30-line subclass.
 - **Streaming first-class** — Every provider implements `generate_stream`. `Agent.stream(on_chunk=...)` works the same way regardless of vendor.
-- **Tools dispatched from C++** — Registry lookup and dispatch in native code; tool bodies stay in Python, so contracts can evolve without a rebuild.
-- **Fluent graphs, not YAML** — `Graph().start().then().finish()`. Introspectable, debuggable in `pdb`, no string-eval magic.
-- **Asyncio bridge** — `AsyncRuntime` wraps GIL-releasing C++ calls in a tunable `ThreadPoolExecutor`. Concurrent agent steps without C++ coroutines.
-- **Thread-safe** — Engine, router, and cache are documented as safe to call concurrently from Python threads.
+- **Tools dispatched from C++** — Registry lookup and dispatch in native code; tool bodies stay in Python, so contracts can evolve without a rebuild. Tool errors are redacted before being returned to the LLM; args and results have configurable size caps.
+- **Fluent graphs, not YAML** — `Graph().start().then().finish()`. Returns a structured `GraphResult` so callers can distinguish "reached end" from "ran out of steps" — no silent truncation.
+- **Asyncio bridge** — `AsyncRuntime` wraps the C++ engine in a `ThreadPoolExecutor`. The Pybind11 bindings release the GIL on `Provider::generate` and `generate_stream`, so threaded provider calls can make concurrent progress.
+- **Thread-safe core** — `Engine`, `AgentRouter`, `AgentState`, `MemoryCache`, `ToolRegistry` are verified by [`tests/test_concurrency.py`](tests/test_concurrency.py): concurrent create+send, concurrent tool invocation, cache contention, history append/read races. CI also runs the concurrency tests under ThreadSanitizer (informational).
+- **Embeddable from C++** — The core compiles as a static library independent of Pybind11. See [`examples/embed_cpp/`](examples/embed_cpp/) for a working pure-C++ demo.
 - **Tiny dependency footprint** — Core requires only Pybind11. Real providers are opt-in extras.
 
 ---
@@ -121,7 +124,7 @@ pip install 'agentcore[ollama]'      # local Ollama daemon
 pip install 'agentcore[all]'         # everything above
 ```
 
-Pre-built wheels for Linux / macOS / Windows × Python 3.9–3.12 are produced by the `wheels.yml` workflow on tagged releases.
+The `wheels.yml` workflow builds Linux / macOS / Windows × Python 3.9–3.12 wheels and uploads them as GitHub artifacts on `v*` tag pushes. PyPI publishing is **not** yet wired up; install via git or the artifact downloads until v0.1.
 
 ---
 
@@ -187,7 +190,7 @@ print(rt.tools.invoke("add", '{"a": 2, "b": 3}'))
 # {"ok": true, "result": 5}
 ```
 
-JSON-schema is auto-generated from annotations and stored alongside the tool in C++, so providers that need schemas (OpenAI tool-calling, Anthropic tool-use) can read them directly.
+JSON-schema is auto-generated from annotations for the common cases — primitives, `Optional[X]`, `Union`, `list[X]`, `dict`, `Literal[...]`. Stored as a string alongside the tool in C++. For complex types (Pydantic models, dataclasses) pass `schema=` explicitly on `@tool` rather than relying on the auto-generator.
 
 ### Multi-agent graphs
 
@@ -238,6 +241,7 @@ All runnable. From the repo root after `pip install -e .`:
 | [`examples/async_example.py`](examples/async_example.py) | Concurrent agent steps |
 | [`examples/openai_example.py`](examples/openai_example.py) | OpenAI provider (requires `OPENAI_API_KEY`) |
 | [`examples/anthropic_example.py`](examples/anthropic_example.py) | Anthropic provider with prompt caching |
+| [`examples/embed_cpp/`](examples/embed_cpp/) | Embedding the C++ core into a non-Python application |
 
 ---
 
@@ -248,7 +252,7 @@ pip install -e ".[test]"
 pytest -v
 ```
 
-Current suite: 14 tests across smoke, router edge cases, tool registry, and streaming (including the Python-subclassed `Provider` trampoline path).
+Current suite: ~20 tests across smoke, router edge cases, tool registry (including args/result size caps and error redaction), streaming (Python-subclassed `Provider` trampoline path), and a dedicated concurrency suite that exercises the `shared_mutex` paths under contention.
 
 ---
 
@@ -269,10 +273,13 @@ What is **not** done and should not be relied on:
 - API stability — expect breaking changes between 0.0.x versions
 - Persistence (state is in-memory only)
 - Tracing / observability hooks
-- Backpressure on router inboxes (currently unbounded)
+- Backpressure on router inboxes (currently unbounded — see [`SECURITY.md`](SECURITY.md))
+- Per-call timeouts on the `Provider` interface
+- Cancellation tokens for in-flight provider / tool calls
 - Full tool-use protocol with multi-turn function calling
-- Production hardening (fuzz testing, ThreadSanitizer in CI, ABI stability)
-- Benchmarks (claims of "fast" are architectural, not measured)
+- Published benchmarks — claims of "fast" are architectural, not measured
+- PyPI publishing — wheels build to GitHub artifacts; nothing is on PyPI yet
+- ABI stability across versions
 
 ### Roadmap
 

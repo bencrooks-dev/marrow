@@ -21,10 +21,12 @@ def main() -> None:
          .then("writer", "editor")
          .finish("editor"))
 
-    final = run_graph(rt, agents, g, initial_input="Topic: graph databases.")
-    print(f"FINAL: {final}")
-    print(f"path  : researcher → writer → editor")
-    print(f"active: {rt.router.active()}")
+    result = run_graph(rt, agents, g, initial_input="Topic: graph databases.")
+    print(f"FINAL    : {result.output}")
+    print("path     : researcher -> writer -> editor")
+    print(f"steps    : {result.steps_taken}")
+    print(f"reached  : {result.reached_end}")
+    print(f"active   : {rt.router.active()}")
 
 
 if __name__ == "__main__":

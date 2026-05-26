@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Optional, Protocol
+from typing import Protocol
 
 from . import _agentcore as _c
 
@@ -14,10 +14,10 @@ PyProviderBase = _c.Provider  # subclass this in Python to write a real provider
 
 class ProviderProtocol(Protocol):
     def name(self) -> str: ...
-    def generate(self, req: "_c.GenerationRequest") -> "_c.GenerationResponse": ...
+    def generate(self, req: _c.GenerationRequest) -> _c.GenerationResponse: ...
 
 
-def _msg(role: "_c.Role", content: str, name: str = "") -> "_c.Message":
+def _msg(role: _c.Role, content: str, name: str = "") -> _c.Message:
     return _c.Message.make(role, content, name)
 
 
@@ -27,8 +27,8 @@ class Agent:
 
     name: str
     provider: ProviderProtocol
-    system_prompt: Optional[str] = None
-    _state: Optional["_c.AgentState"] = field(default=None, repr=False)
+    system_prompt: str | None = None
+    _state: _c.AgentState | None = field(default=None, repr=False)
 
     def append_user(self, text: str) -> None:
         self._state.append(_msg(Role.User, text))
@@ -43,11 +43,14 @@ class Agent:
         self,
         model: str,
         max_tokens: int,
-        trim_to: Optional[int],
-    ) -> "_c.GenerationRequest":
+        trim_to: int | None,
+        temperature: float | None,
+    ) -> _c.GenerationRequest:
         req = _c.GenerationRequest()
         req.model = model
         req.max_tokens = max_tokens
+        if temperature is not None:
+            req.temperature = temperature
         msgs = self._state.trimmed(trim_to) if trim_to else list(self._state.history())
         if self.system_prompt:
             msgs.insert(0, _msg(Role.System, self.system_prompt))
@@ -58,9 +61,10 @@ class Agent:
         self,
         model: str = "mock",
         max_tokens: int = 512,
-        trim_to: Optional[int] = None,
+        trim_to: int | None = None,
+        temperature: float | None = None,
     ) -> str:
-        req = self._build_request(model, max_tokens, trim_to)
+        req = self._build_request(model, max_tokens, trim_to, temperature)
         resp = self.provider.generate(req)
         self.append_assistant(resp.content)
         return resp.content
@@ -69,13 +73,14 @@ class Agent:
         self,
         model: str = "mock",
         max_tokens: int = 512,
-        trim_to: Optional[int] = None,
-        on_chunk: Optional[callable] = None,
+        trim_to: int | None = None,
+        temperature: float | None = None,
+        on_chunk: callable | None = None,
     ) -> str:
         """Streaming variant of `step`. Collects chunks into the final
         assistant message and returns the full text. Each chunk is also
         forwarded to `on_chunk` if provided."""
-        req = self._build_request(model, max_tokens, trim_to)
+        req = self._build_request(model, max_tokens, trim_to, temperature)
         chunks: list[str] = []
 
         def collect(chunk: str) -> None:
@@ -102,15 +107,15 @@ class Runtime:
         return agent
 
     @property
-    def router(self) -> "_c.AgentRouter":
+    def router(self) -> _c.AgentRouter:
         return self.engine.router
 
     @property
-    def cache(self) -> "_c.MemoryCache":
+    def cache(self) -> _c.MemoryCache:
         return self.engine.cache
 
     @property
-    def tools(self) -> "_c.ToolRegistry":
+    def tools(self) -> _c.ToolRegistry:
         return self.engine.tools
 
     def send(self, frm: str, to: str, text: str) -> None:
@@ -122,6 +127,6 @@ class Runtime:
             agent._state.append(routed.message)
         return len(delivered)
 
-    def handoff(self, frm: str, to: str, text: Optional[str] = None) -> bool:
+    def handoff(self, frm: str, to: str, text: str | None = None) -> bool:
         seed = _msg(Role.User, text, frm) if text else None
         return self.router.handoff(frm, to, seed)
