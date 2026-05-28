@@ -14,7 +14,7 @@ import os
 from anthropic import Anthropic
 
 from .. import _agentcore as _c
-from ..sdk import PyProviderBase
+from ..sdk import PyProviderBase, raise_if_cancelled, request_timeout_seconds
 
 _CHAT_ROLE_MAP = {
     _c.Role.User: "user",
@@ -77,6 +77,10 @@ class AnthropicProvider(PyProviderBase):
                 }]
             else:
                 kwargs["system"] = system
+        timeout = request_timeout_seconds(req)
+        if timeout is not None:
+            # Honored by the Anthropic SDK as a per-request wall-clock timeout.
+            kwargs["timeout"] = timeout
         return kwargs
 
     @staticmethod
@@ -96,6 +100,7 @@ class AnthropicProvider(PyProviderBase):
         return "".join(parts)
 
     def generate(self, req):
+        raise_if_cancelled(req)
         resp = self._client.messages.create(**self._build_kwargs(req))
         out = _c.GenerationResponse()
         out.content = self._extract_text(resp.content)
@@ -104,6 +109,8 @@ class AnthropicProvider(PyProviderBase):
         return out
 
     def generate_stream(self, req, on_chunk):
+        raise_if_cancelled(req)
         with self._client.messages.stream(**self._build_kwargs(req)) as stream:
             for text in stream.text_stream:
+                raise_if_cancelled(req)
                 on_chunk(text)

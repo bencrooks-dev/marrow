@@ -17,6 +17,25 @@ CancelToken = _c.CancelToken
 OverflowPolicy = _c.OverflowPolicy
 
 
+def request_timeout_seconds(req) -> float | None:
+    """Convert a GenerationRequest's timeout_ms into seconds for provider
+    SDKs that take a wall-clock timeout. Returns None when unset (0), so
+    the provider's own default applies."""
+    ms = getattr(req, "timeout_ms", 0) or 0
+    return (ms / 1000.0) if ms > 0 else None
+
+
+def raise_if_cancelled(req) -> None:
+    """Raise if the request carries an already-cancelled CancelToken.
+
+    Providers SHOULD call this at entry and at streaming yield points so a
+    cancellation requested from another thread is honored promptly (ARI §3.5).
+    """
+    ct = getattr(req, "cancel_token", None)
+    if ct is not None and ct.cancelled():
+        raise RuntimeError("generation cancelled")
+
+
 class ProviderProtocol(Protocol):
     def name(self) -> str: ...
     def generate(self, req: _c.GenerationRequest) -> _c.GenerationResponse: ...
@@ -103,6 +122,8 @@ class Agent:
         timeout_ms: int = 0,
         cancel_token: _c.CancelToken | None = None,
     ) -> str:
+        if cancel_token is not None and cancel_token.cancelled():
+            raise RuntimeError("operation cancelled before provider call")
         req = self._build_request(model, max_tokens, trim_to, temperature,
                                   timeout_ms, cancel_token)
 
@@ -137,6 +158,8 @@ class Agent:
         """Streaming variant of `step`. Collects chunks into the final
         assistant message and returns the full text. Each chunk is also
         forwarded to `on_chunk` if provided."""
+        if cancel_token is not None and cancel_token.cancelled():
+            raise RuntimeError("operation cancelled before provider call")
         req = self._build_request(model, max_tokens, trim_to, temperature,
                                   timeout_ms, cancel_token)
         chunks: list[str] = []

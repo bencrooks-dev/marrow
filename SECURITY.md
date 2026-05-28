@@ -2,7 +2,9 @@
 
 ## Supported versions
 
-`agentcore` is pre-alpha (0.0.x). Only `main` receives security updates. There are no LTS branches, no backport policy, and no commitments around API stability.
+`agentcore` is `0.1.0` (public API frozen per [`STABILITY.md`](STABILITY.md)). Only `main` receives security updates. There are no LTS branches, no backport policy, and no ABI-stability commitment across versions.
+
+A full STRIDE analysis with severities and trust boundaries lives in [`THREAT-MODEL.md`](THREAT-MODEL.md). This file is the *policy* (how to report, what's in scope); the threat model is the *analysis*.
 
 ## Reporting a vulnerability
 
@@ -50,15 +52,18 @@ Out of scope:
 
 ## Known security-relevant limitations
 
-These are documented limitations as of `main`. They are not vulnerabilities in their own right — they are constraints the user should be aware of when designing systems on top of `agentcore`:
+These are constraints to design around, not vulnerabilities in themselves. The list reflects the current state of `main` (see [`THREAT-MODEL.md`](THREAT-MODEL.md) for severities and IDs):
 
-1. **Tool arguments are not validated against the registered schema.** The schema is informational only. Tool bodies must validate their own inputs.
-2. **No message size cap.** A caller passing an unbounded `Message.content` could OOM the process.
-3. **No request timeout in the `Provider` interface.** Provider implementations may hang indefinitely on a stuck network call.
-4. **`AgentRouter` inboxes are unbounded.** A producer with no consumer will grow memory without backpressure.
-5. **No cancellation tokens.** Once `generate` or `invoke` starts, there is no in-process way to stop it.
+1. **Tool arguments are not validated against the registered schema.** The schema is informational; tool bodies must validate their own inputs. Argument and result **size caps are enforced** by `ToolBox` (1 MiB / 4 MiB), but not by the raw `ToolRegistry.register` path.
+2. **Message size cap is enforced (4 MiB).** Enforced both in `Message.make` and on direct `.content` assignment. Oversized content is rejected, not truncated. (T2)
+3. **Per-call timeouts and cancellation are enforced** at the SDK boundary: `step`/`stream` honor a `CancelToken`, and the OpenAI/Anthropic/Ollama providers pass `timeout_ms` through as a wall-clock timeout and re-check cancellation between stream chunks. A custom `Provider` you write should call `agentcore.sdk.raise_if_cancelled(req)` at its yield points. (T1)
+4. **`AgentRouter` inboxes are unbounded *by default*.** Set `router.set_inbox_limit(id, max, policy)` for backpressure. ARI-Embedded deployments **must** configure a finite bound. (T4)
+5. **Tool error redaction is best-effort.** The default redactor scrubs common secret shapes and paths; for untrusted/multi-tenant use, construct `ToolBox(strict=True)` to return the exception *type only*. (T3)
+6. **No per-agent tool ACL.** Any agent in a `Runtime` can invoke any registered tool; isolate trust domains with separate `Runtime`s. (T7)
+7. **Provider `base_url` is trusted.** Never derive it from model output or untrusted input — a hostile URL exfiltrates prompts and API keys. (T8)
+8. **At-rest conversation content is plaintext.** Use full-disk encryption or an encrypting `StateStore`; treat a shared DB file as a trust boundary. (T5)
 
-Production users should layer their own validation, timeouts, and backpressure on top until these land natively.
+Production users should still layer their own validation and least-privilege tool design on top.
 
 ## Public disclosure
 

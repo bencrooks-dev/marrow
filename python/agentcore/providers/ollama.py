@@ -10,7 +10,7 @@ import json
 import httpx
 
 from .. import _agentcore as _c
-from ..sdk import PyProviderBase
+from ..sdk import PyProviderBase, raise_if_cancelled, request_timeout_seconds
 
 _ROLE_MAP = {
     _c.Role.System: "system",
@@ -52,8 +52,12 @@ class OllamaProvider(PyProviderBase):
         }
 
     def generate(self, req):
-        r = self._client.post(f"{self._base}/api/chat",
-                              json=self._payload(req, stream=False))
+        raise_if_cancelled(req)
+        post_kwargs = {"json": self._payload(req, stream=False)}
+        timeout = request_timeout_seconds(req)
+        if timeout is not None:
+            post_kwargs["timeout"] = timeout
+        r = self._client.post(f"{self._base}/api/chat", **post_kwargs)
         r.raise_for_status()
         data = r.json()
         out = _c.GenerationResponse()
@@ -63,10 +67,16 @@ class OllamaProvider(PyProviderBase):
         return out
 
     def generate_stream(self, req, on_chunk):
+        raise_if_cancelled(req)
+        stream_kwargs = {"json": self._payload(req, stream=True)}
+        timeout = request_timeout_seconds(req)
+        if timeout is not None:
+            stream_kwargs["timeout"] = timeout
         with self._client.stream("POST", f"{self._base}/api/chat",
-                                 json=self._payload(req, stream=True)) as r:
+                                 **stream_kwargs) as r:
             r.raise_for_status()
             for line in r.iter_lines():
+                raise_if_cancelled(req)
                 if not line:
                     continue
                 try:

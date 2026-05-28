@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import inspect
 import json
+import re
 import sys
 import typing
 from dataclasses import dataclass
@@ -138,19 +139,56 @@ def tool(
 
 # --- error redaction -----------------------------------------------------
 
+# Token shapes that commonly carry secrets. Matched anywhere in the message
+# and replaced with [REDACTED]. This is defense-in-depth, not a guarantee —
+# for untrusted/multi-tenant deployments use strict_error_redactor (type only).
+_SECRET_PATTERNS = (
+    re.compile(r"sk-ant-[A-Za-z0-9_\-]{8,}"),    # Anthropic
+    re.compile(r"sk-[A-Za-z0-9_\-]{8,}"),        # OpenAI-style
+    re.compile(r"AKIA[0-9A-Z]{16}"),             # AWS access key id
+    re.compile(r"AIza[0-9A-Za-z_\-]{20,}"),      # Google API key
+    re.compile(r"gh[pousr]_[A-Za-z0-9]{20,}"),   # GitHub tokens
+    re.compile(r"xox[baprs]-[A-Za-z0-9\-]{8,}"), # Slack tokens
+    re.compile(r"eyJ[A-Za-z0-9_\-]+\.[A-Za-z0-9_\-]+\.[A-Za-z0-9_\-]+"),  # JWT
+    re.compile(r"(?i)bearer\s+[A-Za-z0-9._\-]+"),  # bearer tokens
+    re.compile(r"[A-Za-z][A-Za-z0-9+.\-]*://[^\s]*@[^\s]*"),  # creds in URLs
+)
+
+
+def _looks_like_path(seg: str) -> bool:
+    return (
+        seg.startswith("/")
+        or seg.startswith("\\\\")     # UNC path
+        or "/Users/" in seg
+        or "/home/" in seg
+        or "C:\\" in seg
+        or re.match(r"[A-Za-z]:\\", seg) is not None
+    )
+
+
+def _scrub_secrets(text: str) -> str:
+    for pat in _SECRET_PATTERNS:
+        text = pat.sub("[REDACTED]", text)
+    return text
+
+
 def _default_error_redactor(exc: BaseException) -> str:
     """Return a short, structured error string with no traceback and
-    no secret-looking content. Callers can override this on ToolBox()
-    if they need different behavior."""
+    no secret-looking content. Best-effort: scrubs common secret token
+    shapes and filesystem paths. Callers needing stronger guarantees should
+    pass ``strict=True`` to ToolBox (or their own redactor)."""
     msg = (str(exc).splitlines() or [""])[0]
-    # Drop anything that looks like an absolute path or an api key.
-    msg = " ".join(
-        seg for seg in msg.split(" ")
-        if not seg.startswith(("/", "sk-", "Bearer "))
-        and "/Users/" not in seg
-        and "C:\\" not in seg
-    )
+    msg = _scrub_secrets(msg)
+    # Drop anything that looks like an absolute path (may reveal layout).
+    msg = " ".join(seg for seg in msg.split(" ") if not _looks_like_path(seg))
     return f"{type(exc).__name__}: {msg[:200]}"
+
+
+def strict_error_redactor(exc: BaseException) -> str:
+    """Maximum redaction: the exception type only, never the message.
+    Recommended for ARI-Embedded / untrusted multi-tenant deployments where
+    even a scrubbed message is too much surface."""
+    return type(exc).__name__
 
 
 class ToolBox:
@@ -165,9 +203,16 @@ class ToolBox:
     def __init__(
         self,
         error_redactor: Callable[[BaseException], str] | None = None,
+        *,
+        strict: bool = False,
     ) -> None:
         self._defs: list[ToolDef] = []
-        self._redactor = error_redactor or _default_error_redactor
+        if error_redactor is not None:
+            self._redactor = error_redactor
+        elif strict:
+            self._redactor = strict_error_redactor
+        else:
+            self._redactor = _default_error_redactor
 
     def add(self, t: ToolDef) -> ToolBox:
         self._defs.append(t)

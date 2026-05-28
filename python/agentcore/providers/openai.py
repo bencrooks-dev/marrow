@@ -9,7 +9,7 @@ import os
 from openai import OpenAI
 
 from .. import _agentcore as _c
-from ..sdk import PyProviderBase
+from ..sdk import PyProviderBase, raise_if_cancelled, request_timeout_seconds
 
 _ROLE_MAP = {
     _c.Role.System: "system",
@@ -48,12 +48,25 @@ class OpenAIProvider(PyProviderBase):
             for m in msgs
         ]
 
+    def _create_kwargs(self, req, *, stream: bool) -> dict:
+        kwargs = {
+            "model": req.model or self._model,
+            "messages": self._to_messages(req.messages),
+            "temperature": req.temperature,
+            "max_tokens": req.max_tokens,
+        }
+        if stream:
+            kwargs["stream"] = True
+        timeout = request_timeout_seconds(req)
+        if timeout is not None:
+            # Honored by the OpenAI SDK as a per-request wall-clock timeout.
+            kwargs["timeout"] = timeout
+        return kwargs
+
     def generate(self, req):
+        raise_if_cancelled(req)
         resp = self._client.chat.completions.create(
-            model=req.model or self._model,
-            messages=self._to_messages(req.messages),
-            temperature=req.temperature,
-            max_tokens=req.max_tokens,
+            **self._create_kwargs(req, stream=False)
         )
         out = _c.GenerationResponse()
         out.content = resp.choices[0].message.content or ""
@@ -63,14 +76,12 @@ class OpenAIProvider(PyProviderBase):
         return out
 
     def generate_stream(self, req, on_chunk):
+        raise_if_cancelled(req)
         stream = self._client.chat.completions.create(
-            model=req.model or self._model,
-            messages=self._to_messages(req.messages),
-            temperature=req.temperature,
-            max_tokens=req.max_tokens,
-            stream=True,
+            **self._create_kwargs(req, stream=True)
         )
         for chunk in stream:
+            raise_if_cancelled(req)
             if not chunk.choices:
                 continue
             delta = chunk.choices[0].delta.content

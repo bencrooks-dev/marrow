@@ -46,7 +46,20 @@ PYBIND11_MODULE(_agentcore, m) {
         .def_static("make", &Message::make,
                     py::arg("role"), py::arg("content"), py::arg("name") = "")
         .def_readwrite("role",         &Message::role)
-        .def_readwrite("content",      &Message::content)
+        // Validate on assignment so the kMaxContentBytes ceiling cannot be
+        // bypassed by setting `.content` directly after construction (the
+        // make() factory enforces the same bound on the construction path).
+        .def_property("content",
+                      [](const Message& m) { return m.content; },
+                      [](Message& m, std::string v) {
+                          if (v.size() > Message::kMaxContentBytes) {
+                              throw std::runtime_error(
+                                  "Message content exceeds " +
+                                  std::to_string(Message::kMaxContentBytes) +
+                                  " bytes");
+                          }
+                          m.content = std::move(v);
+                      })
         .def_readwrite("name",         &Message::name)
         .def_readwrite("timestamp_ms", &Message::timestamp_ms)
         .def_readwrite("metadata",     &Message::metadata)

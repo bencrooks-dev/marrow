@@ -1,0 +1,47 @@
+name: Security
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: "0 6 * * 1"   # weekly, Monday 06:00 UTC
+
+permissions:
+  contents: read
+
+jobs:
+  codeql:
+    name: CodeQL (Python)
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+      actions: read
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: python
+          queries: security-extended
+      - name: Analyze
+        uses: github/codeql-action/analyze@v3
+
+  pip-audit:
+    name: Dependency audit (pip-audit)
+    runs-on: ubuntu-latest
+    # Advisories in optional provider deps are informational here, not a gate.
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install optional provider dependencies + auditor
+        # Audit the optional provider extras directly; no native build needed.
+        run: |
+          python -m pip install -U pip
+          python -m pip install openai anthropic httpx opentelemetry-api opentelemetry-sdk pip-audit
+      - name: Audit installed dependencies
+        run: pip-audit --desc
