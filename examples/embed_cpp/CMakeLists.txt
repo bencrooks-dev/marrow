@@ -9,14 +9,14 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # self-contained: no install step, no library hunting. In a real
 # downstream project you would either build marrow as a shared
 # library and link to it, or vendor src/core/ as a git submodule.
-get_filename_component(AGENTCORE_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../.." ABSOLUTE)
+get_filename_component(MARROW_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../.." ABSOLUTE)
 
 add_executable(marrow_embed_demo
     main.cpp
-    ${AGENTCORE_ROOT}/src/core/engine.cpp
+    ${MARROW_ROOT}/src/core/engine.cpp
 )
 target_include_directories(marrow_embed_demo
-    PRIVATE ${AGENTCORE_ROOT}/src/core)
+    PRIVATE ${MARROW_ROOT}/src/core)
 
 if(NOT MSVC)
     target_compile_options(marrow_embed_demo PRIVATE -Wall -Wextra -Wpedantic)

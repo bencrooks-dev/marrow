@@ -43,7 +43,7 @@ A standard is not a marketing claim; it is three things that must all exist:
 |---|---|---|
 | **The spec** — normative contract with MUST/SHOULD/MAY | ✅ drafted | [`ARI-SPEC.md`](../ARI-SPEC.md) |
 | **A reference implementation** — proof the spec is buildable | ✅ exists | `marrow` (this repo) |
-| **A conformance kit** — lets a *third party* prove they comply | ⛔ to build | `ari-conformance/` (proposed) |
+| **A conformance kit** — lets a *third party* prove they comply | ✅ exists (kit v0.1) | [`ari-conformance/`](../ari-conformance/) |
 
 The third is what most "standards" are missing and why they stay vanity docs.
 Browsers got real because of the Acid tests; OpenStack interop got real because
@@ -59,6 +59,12 @@ what makes the spec falsifiable rather than aspirational.
 - A published results format ("ARI 0.1 · Core+Embedded · kit v0.1 · pass 47/47").
 - Run `marrow` against it in CI so the reference implementation is provably
   conformant and regressions are caught.
+
+**Status (2026-05-28):** the kit now exists at [`ari-conformance/`](../ari-conformance/)
+(kit v0.1, tests mapped to the [Appendix B checklist](../ARI-SPEC.md#appendix-b-conformance-checklist))
+and runs in CI as the `conformance` job. It is `continue-on-error` (informational)
+until a green run is confirmed; flip it to a hard gate then — that flip is the
+move that makes "ARI-conformant" a falsifiable claim rather than a slogan.
 
 ---
 
@@ -142,10 +148,11 @@ the *spec* belong to everyone.
 
 ## 6. The 90-day concrete next steps
 
-1. **Merge the spec + repositioned README** so the repo reads as "reference
-   implementation of ARI," not "another agent framework." *(this change)*
-2. **Stand up `ari-conformance/`** with the Appendix B checklist as executable
-   tests; wire it into CI against `marrow`.
+1. ✅ **Merge the spec + repositioned README** so the repo reads as "reference
+   implementation of ARI," not "another agent framework." *(done)*
+2. ✅ **Stand up `ari-conformance/`** with the Appendix B checklist as executable
+   tests; wired into CI against `marrow` (`conformance` job). *Remaining: confirm a
+   green run, then flip the job from `continue-on-error` to a hard gate.*
 3. **Port Tilo's agent loop onto an ARI-Embedded build** of marrow; capture
    the gaps the real robot exposes and fold them into ARI 0.2.
 4. **Write the MCP adapter** (expose ARI tools over MCP) — the cheapest way to be
