@@ -39,21 +39,24 @@ for doc in "${DOCS[@]}"; do
   # Flatten path into a unique output name (avoids README.md collisions).
   name="$(echo "${doc%.md}" | tr '/' '-')"
   echo "rendering $doc -> $OUT/$name.pdf"
-  # --load(-media)-error-handling=ignore: don't fail the whole render when a
-  # remote asset (e.g. a status badge whose repo/package doesn't exist yet)
-  # 404s. Without this, wkhtmltopdf exits non-zero on ContentNotFoundError and
-  # `set -e` aborts the script — which is what broke this job after the rename.
-  pandoc "$doc" \
+  # Strip remote images (CI / license / PyPI status badges) before rendering.
+  # wkhtmltopdf fetches them over the network and aborts the whole run with
+  # "Exit with code 1 due to network error: ContentNotFoundError" when one 404s
+  # — e.g. badges pointing at the not-yet-renamed repo / unpublished package.
+  # --load-error-handling=ignore does NOT override that exit in wkhtmltopdf
+  # 0.12.6, so we remove the images instead; they add nothing to a PDF.
+  src="$(mktemp --suffix=.md)"
+  sed -E 's#!\[[^]]*\]\(https?://[^)]*\)##g; s#<img[^>]*src="https?://[^"]*"[^>]*/?>##g' "$doc" > "$src"
+  pandoc "$src" \
     --from gfm \
     --pdf-engine=wkhtmltopdf \
-    --pdf-engine-opt=--load-error-handling --pdf-engine-opt=ignore \
-    --pdf-engine-opt=--load-media-error-handling --pdf-engine-opt=ignore \
     --metadata title="$name" \
     --toc --toc-depth=2 \
     --highlight-style=tango \
     -V margin-top=18mm -V margin-bottom=18mm \
     -V margin-left=16mm -V margin-right=16mm \
     -o "$OUT/$name.pdf"
+  rm -f "$src"
   rendered=$((rendered + 1))
 done
 
