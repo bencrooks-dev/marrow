@@ -11,7 +11,7 @@ You only do this once per package per index.
 1. Go to <https://test.pypi.org/manage/account/publishing/>
 2. Sign in (create the account if you don't have one).
 3. Under **Add a new pending publisher**, fill in:
-   - **PyPI project name:** `marrow`
+   - **PyPI project name:** `marrow-rt`
    - **Owner:** `bencrooks-dev`
    - **Repository name:** `marrow`
    - **Workflow name:** `wheels.yml`
@@ -64,7 +64,7 @@ Verify:
 ```bash
 pip install --index-url https://test.pypi.org/simple/ \
             --extra-index-url https://pypi.org/simple/ \
-            marrow==0.1.1rc1
+            marrow-rt==0.1.1rc1
 ```
 
 ### Full release flow (PyPI)
@@ -116,7 +116,7 @@ If a release ships with a critical bug:
 # Yank from PyPI (does not delete; marks as "do not install")
 gh api -X POST repos/bencrooks-dev/marrow/releases/<id>/assets   # delete attached assets
 
-# Yank from PyPI manually at https://pypi.org/manage/project/marrow/releases/
+# Yank from PyPI manually at https://pypi.org/manage/project/marrow-rt/releases/
 ```
 
 PyPI does **not** allow re-uploading the same version, even after yanking. Bump to the next patch (e.g. yank 0.1.1, ship 0.1.2 with the fix).
