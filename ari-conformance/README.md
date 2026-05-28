@@ -50,5 +50,6 @@ Do **not** advertise "ARI-compatible" without a named profile and version.
 ## Status
 
 Kit v0.1. The reference implementation (`marrow`) is the first runtime under
-test. Until a green run is confirmed in CI, the CI job is marked
-`continue-on-error` (informational) — flip it to a hard gate once validated.
+test. The CI `conformance` job is a **hard gate** as of commit `4302bd3`
+(2026-05-28), after its first confirmed green run on Linux — a failing kit now
+fails CI.

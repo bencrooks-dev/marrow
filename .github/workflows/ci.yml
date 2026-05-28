@@ -65,8 +65,8 @@ jobs:
   conformance:
     name: ARI conformance kit
     runs-on: ubuntu-latest
-    # Informational until a green run is confirmed; flip to a hard gate then.
-    continue-on-error: true
+    # Hard gate: ARI-conformance is now a required, falsifiable check.
+    # First confirmed green run: commit 4302bd3 (2026-05-28), kit v0.1.
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-python@v5

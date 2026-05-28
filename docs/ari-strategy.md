@@ -62,9 +62,9 @@ what makes the spec falsifiable rather than aspirational.
 
 **Status (2026-05-28):** the kit now exists at [`ari-conformance/`](../ari-conformance/)
 (kit v0.1, tests mapped to the [Appendix B checklist](../ARI-SPEC.md#appendix-b-conformance-checklist))
-and runs in CI as the `conformance` job. It is `continue-on-error` (informational)
-until a green run is confirmed; flip it to a hard gate then — that flip is the
-move that makes "ARI-conformant" a falsifiable claim rather than a slogan.
+and runs in CI as the `conformance` job — now a **hard gate** (since commit
+`4302bd3`, 2026-05-28, after its first confirmed green run on Linux). That flip
+is the move that makes "ARI-conformant" a falsifiable claim rather than a slogan.
 
 ---
 
@@ -151,8 +151,8 @@ the *spec* belong to everyone.
 1. ✅ **Merge the spec + repositioned README** so the repo reads as "reference
    implementation of ARI," not "another agent framework." *(done)*
 2. ✅ **Stand up `ari-conformance/`** with the Appendix B checklist as executable
-   tests; wired into CI against `marrow` (`conformance` job). *Remaining: confirm a
-   green run, then flip the job from `continue-on-error` to a hard gate.*
+   tests; wired into CI against `marrow` (`conformance` job), now a **hard gate**
+   after its first confirmed green run on Linux (commit `4302bd3`).
 3. **Port Tilo's agent loop onto an ARI-Embedded build** of marrow; capture
    the gaps the real robot exposes and fold them into ARI 0.2.
 4. **Write the MCP adapter** (expose ARI tools over MCP) — the cheapest way to be
