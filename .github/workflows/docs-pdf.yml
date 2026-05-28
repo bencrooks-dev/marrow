@@ -1,0 +1,50 @@
+name: Docs → PDF
+
+# Renders the documentation set + pitch deck to PDF and commits them to
+# docs/pdf/ so the repo always carries up-to-date PDFs. Triggers only on
+# markdown / script changes (not on the generated PDFs), and the commit is
+# tagged [skip ci], so it cannot loop.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "**/*.md"
+      - "scripts/render-pdfs.sh"
+      - ".github/workflows/docs-pdf.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install pandoc + wkhtmltopdf + fonts
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pandoc wkhtmltopdf xvfb fonts-dejavu fonts-dejavu-extra
+
+      - name: Render prose docs to PDF
+        run: xvfb-run -a bash scripts/render-pdfs.sh
+
+      - name: Render pitch deck (Marp)
+        run: |
+          npx -y @marp-team/marp-cli@latest docs/pitch/agentcore-deck.md \
+            --pdf --allow-local-files -o docs/pdf/agentcore-deck.pdf
+
+      - name: Upload PDFs as build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: agentcore-pdfs
+          path: docs/pdf/*.pdf
+          if-no-files-found: error
+
+      - name: Commit rendered PDFs back to the repo
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "docs: render PDFs [skip ci]"
+          file_pattern: "docs/pdf/*.pdf"
