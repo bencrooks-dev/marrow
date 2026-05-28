@@ -360,18 +360,23 @@ termination, if offered, MUST be a separate, explicitly-named operation.
 ## 8. Persistence
 
 Persistence is OPTIONAL for **ARI-Core** and REQUIRED for **ARI-Server**. A
-runtime that offers persistence MUST do so behind a **StateStore** contract:
+runtime that offers persistence MUST do so behind a **StateStore** contract that
+supports, by behavior:
 
 | Operation | Contract |
 |---|---|
-| `save(agent_id, messages, system_prompt?)` | Durably store a snapshot. |
-| `load(agent_id) -> snapshot?` | Return the stored snapshot or none. |
-| `restore_into(state, snapshot)` | Rehydrate an AgentState from a snapshot. |
+| `save(agent_id, state)` | Durably store a snapshot of the agent's history (and system prompt, if any). |
+| `load(agent_id)` | Return the stored messages, or an explicit **absent** result if none. |
+| `delete(agent_id)` | Remove a stored snapshot. |
+| *enumerate* (e.g. `keys()`) | List the stored agent ids. |
 
-A round-trip MUST be lossless for all REQUIRED `Message` fields *and* `metadata`.
-A `load` of an unknown `agent_id` MUST return an explicit "absent" result, not an
-error. At least one durable backend (e.g. SQLite) SHOULD be provided; an
-in-memory backend MAY be provided for testing.
+A round-trip MUST be **lossless** for all REQUIRED `Message` fields *and*
+`metadata` ([§2.2](#22-message)). A `load` of an unknown `agent_id` MUST return an
+explicit "absent" result (e.g. `null`/`None`), not an error. At least one durable
+backend (e.g. SQLite) SHOULD be provided; an in-memory backend MAY be provided for
+testing. A runtime MAY additionally offer a convenience that rehydrates a live
+agent directly from a store; the signature of such a helper is an implementation
+detail, not part of this contract.
 
 ---
 

@@ -155,6 +155,25 @@ is what agentcore is built to own.
 
 ---
 
+## Conformance
+
+agentcore is the reference implementation of [ARI](ARI-SPEC.md), and it's held to
+the spec by an executable **conformance kit** in [`ari-conformance/`](ari-conformance/).
+Each test maps to a numbered ARI requirement, so "conformant" is *falsifiable*, not
+a marketing claim.
+
+```bash
+pip install -e ".[test]"
+pytest ari-conformance/ -v          # full kit (needs the built extension)
+pytest ari-conformance/test_ari_embedded_structural.py -v   # structural checks, no build
+```
+
+The kit runs in CI on every push (`conformance` job). When making an ARI
+conformance claim, name the profile + version per
+[ARI §10.4](ARI-SPEC.md#104-claiming-conformance), e.g. *"ARI 0.1 · Core + Embedded · kit v0.1."*
+
+---
+
 ## Install
 
 ```bash

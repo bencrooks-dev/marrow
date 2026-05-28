@@ -35,6 +35,11 @@ def _msg_to_dict(m: _c.Message) -> dict:
 def _dict_to_msg(d: dict) -> _c.Message:
     m = _c.Message.make(_c.Role(d["role"]), d["content"], d.get("name", ""))
     m.timestamp_ms = d.get("timestamp_ms", 0)
+    # ARI §2.2/§8: metadata MUST survive a persistence round-trip. It was
+    # serialized by _msg_to_dict; restore it here so load() is lossless.
+    meta = d.get("metadata")
+    if meta:
+        m.metadata = meta
     return m
 
 
