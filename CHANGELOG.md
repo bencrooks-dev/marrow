@@ -4,6 +4,13 @@ All notable changes to `marrow` are documented here. The format follows [Keep a 
 
 ## [Unreleased]
 
+## [0.1.0rc1] — 2026-05-28
+
+First release candidate published to PyPI (as `marrow-rt`). Bundles the
+`agentcore` → `marrow` rename and the ARI standardization work on top of the
+0.1.0 production-primitives baseline below. The ARI conformance kit is a hard CI
+gate as of this candidate.
+
 ### Changed — project renamed
 
 - **Renamed `agentcore` → `marrow`** to avoid a head-on collision with Amazon
