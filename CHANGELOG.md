@@ -20,7 +20,7 @@ All notable changes to `agentcore` are documented here. The format follows [Keep
 - **Cancellation + timeouts are now enforced** (previously plumbed but ignored): `Agent.step`/`stream` honor a pre-call `CancelToken`, and the OpenAI/Anthropic/Ollama providers pass `timeout_ms` through as a per-request wall-clock timeout and re-check cancellation between stream chunks. New helpers: `agentcore.sdk.raise_if_cancelled`, `request_timeout_seconds`.
 - **`Message.content` cap can no longer be bypassed** by direct assignment — the binding validates against `kMaxContentBytes` on set (matching `Message.make`).
 - **Tool-error redaction hardened** — default redactor scrubs more secret shapes (AWS/GCP/GitHub/Slack/JWT/Bearer/cred-URLs) and filesystem paths; new `ToolBox(strict=True)` returns the exception type only. New `strict_error_redactor`.
-- **`RetryPolicy` no longer retries `ValueError`/`TypeError`** (non-transient programming errors).
+- **`RetryPolicy` guidance** — default retry set unchanged; documented how to narrow `retry_on` / widen `skip` for non-transient provider errors (4xx/auth) you don't want retried.
 
 ### Fixed
 

@@ -32,15 +32,14 @@ class RetryPolicy:
     max_delay: float = 30.0
     jitter: float = 0.2
     # Exceptions that should be retried. By default we retry everything
-    # except the skip list below.
+    # except CancelledError / KeyboardInterrupt / SystemExit.
     retry_on: tuple[type[BaseException], ...] = (Exception,)
-    # Never retry: interpreter-control signals, OOM, and programming errors
-    # (ValueError/TypeError) — these are not transient, so retrying only
-    # amplifies load and delays surfacing the real bug. Auth/4xx errors are
-    # provider-specific; narrow `retry_on` if your provider raises typed
-    # client errors you don't want retried.
+    # Never retried. The default retries broadly (including ValueError) because
+    # libraries use it for transient conditions too; for non-transient provider
+    # errors you don't want retried (e.g. 4xx/auth), narrow `retry_on` or widen
+    # `skip` at the call site rather than changing this default.
     skip: tuple[type[BaseException], ...] = (
-        KeyboardInterrupt, SystemExit, MemoryError, ValueError, TypeError,
+        KeyboardInterrupt, SystemExit, MemoryError,
     )
 
     def run(self, fn: Callable[[], T]) -> T:

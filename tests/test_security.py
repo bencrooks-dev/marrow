@@ -34,14 +34,14 @@ _CAP = 4 * 1024 * 1024  # Message.kMaxContentBytes
 # --- T2: content cap cannot be bypassed ----------------------------------
 
 def test_content_cap_enforced_in_make():
-    with pytest.raises(Exception):
+    with pytest.raises(RuntimeError):
         Message.make(Role.User, "x" * (_CAP + 1))
 
 
 def test_content_cap_enforced_on_direct_assignment():
     """T2: setting .content directly must not bypass the cap."""
     m = Message.make(Role.User, "ok")
-    with pytest.raises(Exception):
+    with pytest.raises(RuntimeError):
         m.content = "x" * (_CAP + 1)
     # A normal assignment still works.
     m.content = "still fine"
@@ -133,7 +133,7 @@ def test_reject_policy_surfaces_backpressure():
     rt.router.register_agent("r")
     rt.router.set_inbox_limit("r", 1, OverflowPolicy.Reject)
     rt.router.send("a", "r", Message.make(Role.User, "1"))
-    with pytest.raises(Exception):
+    with pytest.raises(RuntimeError):
         rt.router.send("a", "r", Message.make(Role.User, "2"))
 
 
@@ -141,5 +141,5 @@ def test_reject_policy_surfaces_backpressure():
 
 def test_unknown_tool_raises():
     rt = Runtime()
-    with pytest.raises(Exception):
+    with pytest.raises(RuntimeError):
         rt.tools.invoke("nope", "{}")

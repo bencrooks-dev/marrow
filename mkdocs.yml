@@ -5,6 +5,17 @@ repo_url: https://github.com/bencrooks-dev/agentcore
 repo_name: bencrooks-dev/agentcore
 edit_uri: edit/main/docs/
 
+# Repo-level standards / strategy / pitch docs live under docs/ for proximity but
+# are not part of the published API site (they link to root files outside docs_dir
+# and would fail --strict). Excluded from the build; they still render to PDF and
+# are viewable on GitHub.
+exclude_docs: |
+  pdf/
+  pitch/
+  market-research.md
+  ari-strategy.md
+  ari-rfc-process.md
+
 theme:
   name: material
   features:
