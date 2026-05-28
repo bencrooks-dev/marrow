@@ -39,9 +39,15 @@ for doc in "${DOCS[@]}"; do
   # Flatten path into a unique output name (avoids README.md collisions).
   name="$(echo "${doc%.md}" | tr '/' '-')"
   echo "rendering $doc -> $OUT/$name.pdf"
+  # --load(-media)-error-handling=ignore: don't fail the whole render when a
+  # remote asset (e.g. a status badge whose repo/package doesn't exist yet)
+  # 404s. Without this, wkhtmltopdf exits non-zero on ContentNotFoundError and
+  # `set -e` aborts the script — which is what broke this job after the rename.
   pandoc "$doc" \
     --from gfm \
     --pdf-engine=wkhtmltopdf \
+    --pdf-engine-opt=--load-error-handling --pdf-engine-opt=ignore \
+    --pdf-engine-opt=--load-media-error-handling --pdf-engine-opt=ignore \
     --metadata title="$name" \
     --toc --toc-depth=2 \
     --highlight-style=tango \
