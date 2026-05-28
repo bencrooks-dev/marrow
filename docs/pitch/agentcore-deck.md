@@ -27,7 +27,9 @@ HONESTY NOTES FOR THE PRESENTER (delete before sending):
 The runtime layer for AI agents that run **where you can't ship Python**:
 robots, edge devices, and native applications.
 
-`[SUPPLY THIS: your name, title, contact]` · pre-alpha · 2026
+Presented by **[Your Name]**, Founder — `[email]` · `github.com/bencrooks-dev/agentcore`
+
+*pre-alpha · 2026 · replace bracketed fields before sending*
 
 ---
 
@@ -127,7 +129,7 @@ Bolder framing: Morgan Stanley models a **~$5T humanoid market by 2050** *(diffe
 
 - **Structural** — incumbents are Python; they can't follow into embedded/real-time
 - **Standard ownership** — reference implementation of ARI + the conformance kit
-- **Dogfood credibility** — Tilo (humanoid) as the lighthouse deployment `[SUPPLY THIS: deployment status]`
+- **Dogfood credibility** — Tilo (humanoid) as the lighthouse deployment *(status: integration in progress — replace with current state)*
 - **Ecosystem-complementary** — rides MCP/A2A adoption instead of fighting it
 - **Security-first** — threat model + hardening shipped before 1.0 (table stakes for infrastructure others depend on)
 
@@ -142,9 +144,10 @@ Bolder framing: Morgan Stanley models a **~$5T humanoid market by 2050** *(diffe
 
 **Stage: pre-alpha. External users: 0.** First deployment target: Tilo.
 
-- Design partners: `[SUPPLY THIS]`
-- GitHub / download / community metrics: `[SUPPLY THIS]`
-- Pilots / LOIs: `[SUPPLY THIS]`
+*Replace the italic examples below with real numbers — do not present as-is:*
+- Design partners: *e.g., 1 robotics + 1 trading (illustrative)*
+- GitHub / downloads / community: *e.g., [stars], [PyPI installs] (illustrative)*
+- Pilots / LOIs: *e.g., none yet, or list (illustrative)*
 
 ---
 
@@ -160,7 +163,7 @@ Bolder framing: Morgan Stanley models a **~$5T humanoid market by 2050** *(diffe
 
 ## Business model
 
-`[SUPPLY THIS: your model]` — structure to consider (do not present as decided):
+**Recommended: open core** *(refine before presenting):*
 
 - **Open core** — Apache-2.0 runtime + spec; commercial add-ons (managed fleet, observability, certified embedded builds, support/SLA)
 - **Conformance / certification** program for vendors
@@ -172,20 +175,22 @@ Bolder framing: Morgan Stanley models a **~$5T humanoid market by 2050** *(diffe
 
 ## The ask
 
-`[SUPPLY THIS: raise amount, stage, use of funds]`
+**Raising: $[1.5M] pre-seed** *(illustrative — set your real number)*
 
-Suggested structure to fill in:
-- **Raising:** $`[X]` `[pre-seed / seed]`
-- **Use of funds:** `[eng hires / Tilo integration / standards evangelism / design-partner support]`
-- **Milestones this funds:** `[first embedded deployment, first external implementation, N design partners]`
+- **Use of funds:** ~50% engineering (embedded runtime + a second-language implementation), ~25% Tilo / robotics integration, ~15% standards evangelism + design-partner support, ~10% ops
+- **Milestones this funds (12–18 mo):** ARI-Embedded running in Tilo in production · first *external* conformant implementation · `[N]` design partners · conformance CI gate green
+
+*All figures illustrative — replace with your real plan before presenting.*
 
 ---
 
 ## Team
 
-`[SUPPLY THIS: founders, relevant background, advisors]`
+**[Your Name]** — Founder. *[Background: AI engineering + systems/C++ + robotics — replace with your real bio]*
 
-*Why this team: `[SUPPLY THIS — embedded/systems + AI + standards credibility]`*
+**Advisors:** *[names / roles — replace]*
+
+*Why this team: the embedded-systems + AI + standards-creation combination this requires — fill with your real edge.*
 
 ---
 

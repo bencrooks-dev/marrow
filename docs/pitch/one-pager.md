@@ -33,8 +33,10 @@ enterprise agentic-AI adoption **33% of apps by 2028** (*Gartner*). Our wedge
 implementation, conformance kit, STRIDE threat model + security hardening + CI
 scanning. **External users: 0.** First deployment target: Tilo (humanoid).
 
-**Traction / Team / Ask.** `[SUPPLY THIS: design partners, pilots, founders +
-background, raise amount, use of funds]` — *not fabricated; founder to supply.*
+**Traction / Team / Ask.** *Template — replace with real figures, do not present as
+fact:* design partners `[e.g., 1 robotics + 1 trading]`; founder `[name +
+background]`; raising `[$1.5M pre-seed, illustrative]` for `[embedded runtime, Tilo
+integration, a second conformant implementation, standards evangelism]`.
 
 **Links.** Spec: `ARI-SPEC.md` · Strategy: `docs/ari-strategy.md` · Threat model:
 `THREAT-MODEL.md` · Repo: github.com/bencrooks-dev/agentcore

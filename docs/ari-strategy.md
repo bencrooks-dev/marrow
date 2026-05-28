@@ -124,6 +124,15 @@ the *spec* belong to everyone.
 - **ARI** = the standard (the interface). **agentcore** = the reference
   implementation. Keep these rigorously distinct in all materials — conflating
   them makes ARI look like a single vendor's API and kills neutral adoption.
+- **⚠ Naming collision — resolve before any go-to-market push.** "AgentCore" is
+  now **Amazon Bedrock AgentCore** (AWS; GA 2025-10-13), which itself ships an
+  "AgentCore Runtime" — the *same layer this project targets*. This is a direct
+  name + semantic collision with a major cloud vendor: it will lose every search,
+  invites trademark risk, and an investor/operator will flag it on slide one.
+  **Recommendation:** keep **ARI** (the standard name is defensible) and **rename
+  the implementation** to something ownable before evangelizing. The standard
+  surviving a rename of its reference implementation is exactly why ARI and
+  agentcore are kept separate (above). Treat this as a blocking pre-launch task.
 - Reserve the obvious homes early (an `ari-spec` repo, a docs domain) so the
   standard has a neutral-looking address when Rung 5 arrives.
 - Spec text under **CC BY 4.0** (anyone can implement); reference code under
