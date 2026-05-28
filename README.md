@@ -2,7 +2,9 @@
 
 # agentcore
 
-**A lightweight C++ core for AI agent orchestration — fast, embeddable, ergonomic from Python.**
+**The embeddable agent runtime — for robots, edge devices, and native apps where you can't ship Python.**
+
+*Reference implementation of **[ARI](ARI-SPEC.md)**, the Agent Runtime Interface.*
 
 [![CI](https://github.com/bencrooks-dev/agentcore/actions/workflows/ci.yml/badge.svg)](https://github.com/bencrooks-dev/agentcore/actions/workflows/ci.yml)
 [![Wheels](https://github.com/bencrooks-dev/agentcore/actions/workflows/wheels.yml/badge.svg)](https://github.com/bencrooks-dev/agentcore/actions/workflows/wheels.yml)
@@ -15,9 +17,37 @@
 
 ---
 
-`agentcore` is a Pybind11-bound C++ engine that handles the performance-sensitive parts of multi-agent systems — message state, history, routing, tool dispatch — while keeping the developer-facing API in clean, ergonomic Python.
+`agentcore` is a native **C++17 agent runtime** — the loop that holds conversation
+state, calls a model, dispatches tools, and routes messages between agents — with
+an ergonomic Python binding on top. It is the **reference implementation of
+[ARI](ARI-SPEC.md)**, a language-neutral contract for the agent *runtime* layer.
 
-It's designed as a deliberate alternative to Python-heavy frameworks like **LangGraph**, **CrewAI**, and **AutoGen**: the hot path runs in native C++17 with proper read-heavy locking; the orchestration surface stays in Python where iteration is cheap. Real LLM providers (OpenAI, Anthropic, Ollama) ship as Python subclasses that hook back into the C++ core through a trampoline.
+**Why this exists.** The mature Python frameworks (LangGraph, CrewAI, AutoGen) are
+excellent for server apps, but they're Python-locked by design — which rules them
+out of a fast-growing class of deployments:
+
+- **Embodied / robotic** systems with hard real-time constraints (no GC pauses).
+- **Edge / on-device** deployments — constrained hardware, often offline, local models.
+- **Native applications** — game engines, audio/DSP, trading systems — that need an
+  agent loop without shipping a Python runtime to the customer.
+
+agentcore targets exactly that lane: a native core you can **embed without a managed
+runtime**, with bounded memory and no hot-path allocation (the **ARI-Embedded**
+profile). The C++ core compiles as a standalone library; the Python binding is a
+convenience, not a requirement. Real providers (OpenAI, Anthropic, Ollama) ship as
+thin Python subclasses that hook back into the core through a trampoline.
+
+**ARI sits *beneath* the agent protocol stack — it complements MCP and A2A, it does not compete with them:**
+
+```
+A2A   — agent-to-agent messaging (across hosts)
+MCP   — tool / context exchange (model ↔ world)
+ARI   — the runtime that runs a turn   ◀── agentcore implements this
+        (state · provider · tools · routing)
+Model provider (OpenAI / Anthropic / local)
+```
+
+See **[ARI-SPEC.md](ARI-SPEC.md)** for the contract and **[docs/ari-strategy.md](docs/ari-strategy.md)** for how the standard is meant to grow.
 
 > **Project status: 0.1.0, public API frozen per [`STABILITY.md`](STABILITY.md).** The C++ core is buildable, tested, and works on Linux / macOS / Windows × Python 3.9–3.12. Production primitives — timeouts, cancellation, bounded inboxes, persistence, tracing, usage tracking — all shipped. Real-world soak testing and bus-factor-of-2 are the remaining items before this should be your default choice for a live system. See [`ROADMAP.md`](ROADMAP.md).
 
@@ -111,7 +141,17 @@ See [`docs/design-notes.md`](docs/design-notes.md) for the design rationale and 
 | Embeddable from C++ | **yes** | no | no | no |
 | Status | pre-alpha | stable | stable | stable |
 
-Read this honestly: LangGraph / CrewAI / AutoGen are mature, supported, and have far more features today. `agentcore` is a focused alternative for the case where **the orchestration layer is your bottleneck** — high agent counts, large histories, hot tool dispatch, or embedding into a C++ application. If your bottleneck is network I/O (it usually is), the speedup will be modest.
+Read this honestly: LangGraph / CrewAI / AutoGen are mature, supported, and have far
+more features today, and for a server-side Python app you should probably use one of
+them. `agentcore` is not trying to win that comparison on features or on raw speed —
+if your bottleneck is network I/O (it usually is, server-side), the speedup is modest.
+
+The row that matters is the last one: **Embeddable without a Python runtime.** That is
+a structural property the others can't offer without ceasing to be Python frameworks —
+and it's the whole point. If you're putting an agent loop inside a **robot, a drone, an
+edge device, or a native C++ application**, the Python frameworks aren't an option and
+agentcore is. That lane — the **[ARI-Embedded](ARI-SPEC.md#102-ari-embedded)** profile —
+is what agentcore is built to own.
 
 ---
 
@@ -266,28 +306,40 @@ Current suite: ~20 tests across smoke, router edge cases, tool registry (includi
 
 ## Project status
 
-This is a **pre-alpha proof of concept**. The C++ core builds and runs on three platforms. The Python API is ergonomic. The architecture has been pressure-tested in the design and the most controversial trade-offs are documented in [`docs/design-notes.md`](docs/design-notes.md).
+This is **0.1.0** — the public API is frozen per [`STABILITY.md`](STABILITY.md). The
+C++ core builds and runs on Linux / macOS / Windows × Python 3.9–3.12. The
+architecture has been pressure-tested and the controversial trade-offs are
+documented in [`docs/design-notes.md`](docs/design-notes.md).
 
-What is stable enough to play with:
+Against the [ARI](ARI-SPEC.md) profiles, agentcore currently targets **ARI-Core**
+and **ARI-Embedded** (with **ARI-Server** features present but not yet soak-tested).
 
-- Core message / state / cache / router APIs
-- Tool registration via `@tool` + `ToolBox`
-- Graph builder
-- `AsyncRuntime` for concurrent steps
+What is shipped and stable:
+
+- Core message / state / cache / router APIs (`std::shared_mutex`, read-heavy)
+- Tool registration via `@tool` + `ToolBox`, dispatched from the C++ registry
+- Graph builder with structured `GraphResult`
+- `AsyncRuntime` for concurrent steps (GIL released during provider calls)
 - Mock + OpenAI + Anthropic + Ollama providers (best-effort, not battle-tested)
+- Per-call timeouts + `CancelToken` on `step()` / `stream()`
+- Bounded router inboxes with `Reject` / `DropOldest` / `DropNewest` policies
+- Persistence — `StateStore` with in-memory + SQLite backends
+- Observability — `TraceSink` with null / print / OpenTelemetry sinks
+- Usage tracking, retry, and rate-limiting configured on the `Runtime`
+- Embeddable pure-C++ core (see [`examples/embed_cpp/`](examples/embed_cpp/))
 
-What is **not** done and should not be relied on:
+What is **not** done and should not yet be relied on:
 
-- API stability — expect breaking changes between 0.0.x versions
-- Persistence (state is in-memory only)
-- Tracing / observability hooks
-- Backpressure on router inboxes (currently unbounded — see [`SECURITY.md`](SECURITY.md))
-- Per-call timeouts on the `Provider` interface
-- Cancellation tokens for in-flight provider / tool calls
-- Full tool-use protocol with multi-turn function calling
-- Published benchmarks — claims of "fast" are architectural, not measured
-- PyPI publishing — wheels build to GitHub artifacts; nothing is on PyPI yet
-- ABI stability across versions
+- Real-world soak testing and a bus factor ≥ 2 (the remaining gates before this
+  is your default for a live system)
+- Full multi-turn tool-use protocol (automatic tool-call loop inside `step`)
+- Published, *measured* benchmarks vs LangGraph (the harness exists; numbers are
+  not yet committed)
+- PyPI publishing — wheels build to GitHub artifacts; trusted publishing is wired
+  but nothing is on PyPI yet
+- ABI stability across versions (source-level stability only, per `STABILITY.md`)
+- An **ARI conformance kit** — the executable proof of conformance (see
+  [`docs/ari-strategy.md`](docs/ari-strategy.md))
 
 ### Roadmap
 
