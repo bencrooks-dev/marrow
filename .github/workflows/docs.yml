@@ -24,7 +24,7 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install build deps + agentcore (for mkdocstrings)
+      - name: Install build deps + marrow (for mkdocstrings)
         run: |
           python -m pip install -U pip
           python -m pip install cmake pybind11 scikit-build-core

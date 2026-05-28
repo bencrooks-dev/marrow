@@ -5,24 +5,24 @@
 ```bash
 python -m venv .venv && source .venv/bin/activate
 pip install -U pip
-pip install agentcore                  # from PyPI (when published)
+pip install marrow-rt                  # from PyPI (when published)
 # or, from source:
-pip install git+https://github.com/bencrooks-dev/agentcore
+pip install git+https://github.com/bencrooks-dev/marrow
 ```
 
 With real LLM providers:
 
 ```bash
-pip install 'agentcore[openai]'
-pip install 'agentcore[anthropic]'
-pip install 'agentcore[ollama]'
-pip install 'agentcore[all]'
+pip install 'marrow-rt[openai]'
+pip install 'marrow-rt[anthropic]'
+pip install 'marrow-rt[ollama]'
+pip install 'marrow-rt[all]'
 ```
 
 ## Hello world
 
 ```python
-from agentcore import Agent, Runtime, MockProvider
+from marrow import Agent, Runtime, MockProvider
 
 rt = Runtime()
 provider = MockProvider()
@@ -35,8 +35,8 @@ print(agent.step())
 ## Use a real provider
 
 ```python
-from agentcore import Agent, Runtime
-from agentcore.providers import AnthropicProvider
+from marrow import Agent, Runtime
+from marrow.providers import AnthropicProvider
 
 rt = Runtime()
 provider = AnthropicProvider(model="claude-sonnet-4-6")
@@ -55,7 +55,7 @@ agent.stream(on_chunk=lambda c: print(c, end="", flush=True))
 ## Add a tool
 
 ```python
-from agentcore import Runtime, ToolBox, tool
+from marrow import Runtime, ToolBox, tool
 
 @tool(description="Multiply two integers.")
 def multiply(a: int, b: int) -> int:

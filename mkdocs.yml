@@ -1,8 +1,8 @@
-site_name: agentcore
+site_name: marrow
 site_description: Lightweight C++ core for AI agent orchestration
-site_url: https://bencrooks-dev.github.io/agentcore/
-repo_url: https://github.com/bencrooks-dev/agentcore
-repo_name: bencrooks-dev/agentcore
+site_url: https://bencrooks-dev.github.io/marrow/
+repo_url: https://github.com/bencrooks-dev/marrow
+repo_name: bencrooks-dev/marrow
 edit_uri: edit/main/docs/
 
 # Repo-level standards / strategy / pitch docs live under docs/ for proximity but
@@ -90,8 +90,8 @@ nav:
     - Security: security.md
     - Benchmarks: benchmarks.md
   - API reference:
-    - agentcore: api/agentcore.md
-    - agentcore.providers: api/providers.md
+    - marrow: api/marrow.md
+    - marrow.providers: api/providers.md
   - Project:
     - Roadmap: roadmap.md
     - Contributing: contributing.md

@@ -1,4 +1,4 @@
-// Pybind11 bindings for agentcore.
+// Pybind11 bindings for marrow.
 //
 // Provider is exposed as a base class with a trampoline (PyProvider)
 // so Python can subclass it and have C++ call back into Python.
@@ -14,7 +14,7 @@
 #include <pybind11/stl.h>
 
 namespace py = pybind11;
-using namespace agentcore;
+using namespace marrow;
 
 // Trampoline so Python can subclass Provider.
 class PyProvider : public Provider {
@@ -32,8 +32,8 @@ public:
     }
 };
 
-PYBIND11_MODULE(_agentcore, m) {
-    m.doc() = "agentcore — C++ engine for lightweight agent orchestration";
+PYBIND11_MODULE(_marrow, m) {
+    m.doc() = "marrow — C++ engine for lightweight agent orchestration";
 
     py::enum_<Role>(m, "Role")
         .value("System",    Role::System)

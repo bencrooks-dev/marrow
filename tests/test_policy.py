@@ -5,7 +5,7 @@ import time
 
 import pytest
 
-from agentcore import RateLimiter, RetryPolicy
+from marrow import RateLimiter, RetryPolicy
 
 # --- RetryPolicy ---------------------------------------------------------
 

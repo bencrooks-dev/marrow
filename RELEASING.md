@@ -1,4 +1,4 @@
-# Releasing agentcore
+# Releasing marrow
 
 The release path is automated via `.github/workflows/wheels.yml` and uses [PyPI Trusted Publishing](https://docs.pypi.org/trusted-publishers/) (no API tokens stored in GitHub secrets). To enable it you'll need a PyPI account; the rest is one-click from there.
 
@@ -11,9 +11,9 @@ You only do this once per package per index.
 1. Go to <https://test.pypi.org/manage/account/publishing/>
 2. Sign in (create the account if you don't have one).
 3. Under **Add a new pending publisher**, fill in:
-   - **PyPI project name:** `agentcore`
+   - **PyPI project name:** `marrow`
    - **Owner:** `bencrooks-dev`
-   - **Repository name:** `agentcore`
+   - **Repository name:** `marrow`
    - **Workflow name:** `wheels.yml`
    - **Environment name:** `testpypi`
 4. Click **Add**.
@@ -28,7 +28,7 @@ You only do this once per package per index.
 
 The workflow gates publishing behind two GitHub **environments**:
 
-1. Open <https://github.com/bencrooks-dev/agentcore/settings/environments>
+1. Open <https://github.com/bencrooks-dev/marrow/settings/environments>
 2. Click **New environment** → name it `testpypi`. Save.
 3. Click **New environment** → name it `pypi`. Save.
 
@@ -41,10 +41,10 @@ The workflow distinguishes **release candidates** (auto-publish to TestPyPI) fro
 ### Pre-release flow (TestPyPI)
 
 ```bash
-# 1. Bump version in pyproject.toml and python/agentcore/__init__.py (must match)
+# 1. Bump version in pyproject.toml and python/marrow/__init__.py (must match)
 # 2. Update CHANGELOG.md with the new version section
 # 3. Commit
-git add pyproject.toml python/agentcore/__init__.py CHANGELOG.md
+git add pyproject.toml python/marrow/__init__.py CHANGELOG.md
 git commit -m "chore: bump version to 0.1.1rc1"
 
 # 4. Tag (any of: rc, a, b suffixes trigger TestPyPI)
@@ -64,7 +64,7 @@ Verify:
 ```bash
 pip install --index-url https://test.pypi.org/simple/ \
             --extra-index-url https://pypi.org/simple/ \
-            agentcore==0.1.1rc1
+            marrow==0.1.1rc1
 ```
 
 ### Full release flow (PyPI)
@@ -103,7 +103,7 @@ python -m benchmarks.run
 
 # pyproject + __init__ versions match
 grep -E '^version' pyproject.toml
-grep __version__ python/agentcore/__init__.py
+grep __version__ python/marrow/__init__.py
 ```
 
 If any of those fail, fix before tagging.
@@ -114,9 +114,9 @@ If a release ships with a critical bug:
 
 ```bash
 # Yank from PyPI (does not delete; marks as "do not install")
-gh api -X POST repos/bencrooks-dev/agentcore/releases/<id>/assets   # delete attached assets
+gh api -X POST repos/bencrooks-dev/marrow/releases/<id>/assets   # delete attached assets
 
-# Yank from PyPI manually at https://pypi.org/manage/project/agentcore/releases/
+# Yank from PyPI manually at https://pypi.org/manage/project/marrow/releases/
 ```
 
 PyPI does **not** allow re-uploading the same version, even after yanking. Bump to the next patch (e.g. yank 0.1.1, ship 0.1.2 with the fix).

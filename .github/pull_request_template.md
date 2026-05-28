@@ -1,4 +1,4 @@
-<!-- Thanks for contributing to agentcore. -->
+<!-- Thanks for contributing to marrow. -->
 
 ## Summary
 

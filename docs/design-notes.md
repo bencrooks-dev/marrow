@@ -1,6 +1,6 @@
 # Design Notes
 
-Decisions that shaped agentcore, and why.
+Decisions that shaped marrow, and why.
 
 ---
 
@@ -40,7 +40,7 @@ The JSON-schema for each tool is also stored in C++ (as a string), so providers 
 
 **When this flips:** If profiling shows a measurable fraction of CPU time burned in trivially-C++-able tools (string manip, math, regex), those *specific* tools can be implemented as `Provider`-style C++ plugins. The registry already accepts any `ToolFn` — no API change needed.
 
-**Code:** `src/core/engine.hpp` (`ToolRegistry`), `src/bindings/bindings.cpp` (`ToolRegistry::register` binding), `python/agentcore/tools.py` (`@tool` + `ToolBox`).
+**Code:** `src/core/engine.hpp` (`ToolRegistry`), `src/bindings/bindings.cpp` (`ToolRegistry::register` binding), `python/marrow/tools.py` (`@tool` + `ToolBox`).
 
 ---
 
@@ -62,7 +62,7 @@ g = (Graph()
 
 **When this flips:** If a `Graph` becomes the dominant interchange format and *needs* to be serialised across language/process boundaries (e.g. a graph defined in Python, executed by a Go scheduler), we add `to_proto()` / `from_proto()`. Protobuf, not YAML.
 
-**Code:** `python/agentcore/graph.py`, `examples/graph_example.py`.
+**Code:** `python/marrow/graph.py`, `examples/graph_example.py`.
 
 ---
 
@@ -86,7 +86,7 @@ Crucially: because `Provider::generate` releases the GIL, multiple worker thread
 
 **When this flips:** If we ever ship a C++ provider (e.g. a llama.cpp embed), or if benchmarks show that thread-pool dispatch is dominating at very high agent counts (~10k), then a C++ task queue with `std::condition_variable` worker threads becomes worthwhile. The Python `AsyncRuntime` surface stays unchanged — only the internals move.
 
-**Code:** `python/agentcore/asyncio_bridge.py`, `examples/async_example.py`, plus the `call_guard` on `MockProvider::generate` in `src/bindings/bindings.cpp`.
+**Code:** `python/marrow/asyncio_bridge.py`, `examples/async_example.py`, plus the `call_guard` on `MockProvider::generate` in `src/bindings/bindings.cpp`.
 
 ---
 

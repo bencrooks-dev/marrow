@@ -1,6 +1,6 @@
 # research_agent
 
-A small but real agentcore application: a three-agent pipeline that researches a topic, writes a draft, and polishes it. Demonstrates:
+A small but real marrow application: a three-agent pipeline that researches a topic, writes a draft, and polishes it. Demonstrates:
 
 - Multi-agent handoff via `Graph`
 - Real provider (defaults to `MockProvider`; flip to OpenAI/Anthropic via env)
@@ -42,4 +42,4 @@ estimated cost    : $0.0012
 
 ## What this proves
 
-That `agentcore` can drive a real-shaped agent application — three agents, a graph, tools, observability, persistence — without falling apart at the seams. Use this as a template for your own app.
+That `marrow` can drive a real-shaped agent application — three agents, a graph, tools, observability, persistence — without falling apart at the seams. Use this as a template for your own app.

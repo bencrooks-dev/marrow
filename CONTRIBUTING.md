@@ -1,14 +1,14 @@
-# Contributing to agentcore
+# Contributing to marrow
 
-Thanks for your interest. `agentcore` is pre-alpha and we welcome contributions across the C++ core, Python SDK, providers, tests, and docs.
+Thanks for your interest. `marrow` is pre-alpha and we welcome contributions across the C++ core, Python SDK, providers, tests, and docs.
 
 ---
 
 ## Development setup
 
 ```bash
-git clone https://github.com/bencrooks-dev/agentcore
-cd agentcore
+git clone https://github.com/bencrooks-dev/marrow
+cd marrow
 python -m venv .venv && source .venv/bin/activate
 pip install -U pip scikit-build-core pybind11 cmake
 pip install -e ".[test,all]"
@@ -48,7 +48,7 @@ If you're picking up something larger than a one-file change, open an issue firs
 - **Python 3.9+** (one runtime; we test 3.9–3.12).
 - Prefer `@dataclass` and explicit type hints. `from __future__ import annotations` at the top.
 - No emojis in source or output.
-- Provider implementations live in `python/agentcore/providers/`. New providers should:
+- Provider implementations live in `python/marrow/providers/`. New providers should:
   - Subclass `PyProviderBase` (which is the C++ `Provider` exposed via Pybind11)
   - Implement `name()`, `generate(req)`, and `generate_stream(req, on_chunk)`
   - Use lazy imports of the backing SDK with a clear install hint in the error message

@@ -1,6 +1,6 @@
 """OpenAI provider — Chat Completions API with streaming support.
 
-Requires: ``pip install 'agentcore[openai]'``
+Requires: ``pip install 'marrow-rt[openai]'``
 """
 from __future__ import annotations
 
@@ -8,7 +8,7 @@ import os
 
 from openai import OpenAI
 
-from .. import _agentcore as _c
+from .. import _marrow as _c
 from ..sdk import PyProviderBase, raise_if_cancelled, request_timeout_seconds
 
 _ROLE_MAP = {

@@ -1,6 +1,6 @@
 # API Stability Policy
 
-This document defines what counts as a breaking change for `agentcore`, what the deprecation flow looks like, and what callers can rely on.
+This document defines what counts as a breaking change for `marrow`, what the deprecation flow looks like, and what callers can rely on.
 
 ## Semantic versioning
 
@@ -11,7 +11,7 @@ We follow [SemVer 2.0.0](https://semver.org/) once we reach **1.0**. Until then 
 
 ## Public API surface
 
-A symbol is **public** if it is exported from `agentcore.__all__` or its containing submodule's `__all__`. Public symbols belong to one of three tiers, labeled in the docstring:
+A symbol is **public** if it is exported from `marrow.__all__` or its containing submodule's `__all__`. Public symbols belong to one of three tiers, labeled in the docstring:
 
 | Tier | Stability promise |
 |---|---|
@@ -25,31 +25,31 @@ If a symbol has no marker, treat it as **experimental** until we add one.
 
 The following symbols are guaranteed stable at v0.1.0:
 
-- `agentcore.Agent`
-- `agentcore.Runtime`
-- `agentcore.Message`, `agentcore.Role`
-- `agentcore.MockProvider`, `agentcore.PyProviderBase`
-- `agentcore.GenerationRequest`, `agentcore.GenerationResponse`
-- `agentcore.CancelToken`, `agentcore.OverflowPolicy`
-- `agentcore.tool`, `agentcore.ToolBox`
-- `agentcore.Graph`, `agentcore.GraphResult`, `agentcore.GraphExhausted`, `agentcore.run_graph`
-- `agentcore.AsyncRuntime`, `agentcore.AsyncAgent`, `agentcore.to_thread`
-- `agentcore.StateStore`, `agentcore.InMemoryStateStore`, `agentcore.SQLiteStateStore`
-- `agentcore.RateLimiter`, `agentcore.RetryPolicy`
-- `agentcore.TraceSink`, `agentcore.NullTraceSink`, `agentcore.PrintTraceSink`, `agentcore.OpenTelemetryTraceSink`
-- `agentcore.UsageTracker`, `agentcore.UsageRecord`
+- `marrow.Agent`
+- `marrow.Runtime`
+- `marrow.Message`, `marrow.Role`
+- `marrow.MockProvider`, `marrow.PyProviderBase`
+- `marrow.GenerationRequest`, `marrow.GenerationResponse`
+- `marrow.CancelToken`, `marrow.OverflowPolicy`
+- `marrow.tool`, `marrow.ToolBox`
+- `marrow.Graph`, `marrow.GraphResult`, `marrow.GraphExhausted`, `marrow.run_graph`
+- `marrow.AsyncRuntime`, `marrow.AsyncAgent`, `marrow.to_thread`
+- `marrow.StateStore`, `marrow.InMemoryStateStore`, `marrow.SQLiteStateStore`
+- `marrow.RateLimiter`, `marrow.RetryPolicy`
+- `marrow.TraceSink`, `marrow.NullTraceSink`, `marrow.PrintTraceSink`, `marrow.OpenTelemetryTraceSink`
+- `marrow.UsageTracker`, `marrow.UsageRecord`
 
 ### v0.1 experimental surface
 
 These work today but may change shape before 1.0:
 
-- `agentcore.providers.*` — provider implementations (OpenAI/Anthropic/Ollama)
+- `marrow.providers.*` — provider implementations (OpenAI/Anthropic/Ollama)
 - The exact text of error messages (do not match on them)
-- The structure of `agentcore.tools._default_error_redactor` output
+- The structure of `marrow.tools._default_error_redactor` output
 
 ### Internal
 
-- `agentcore._agentcore.*` — the raw Pybind11 module. Use the Python wrappers.
+- `marrow._marrow.*` — the raw Pybind11 module. Use the Python wrappers.
 - Anything not listed under stable or experimental.
 
 ## Deprecation flow
@@ -84,7 +84,7 @@ For 0.x development, "minor" means "the next 0.x.0 release."
 
 ## C++ ABI
 
-The C++ static library `libagentcore_core.a` does **not** have ABI stability yet. The C++ headers are not versioned; downstream C++ consumers should pin to a specific git commit and rebuild on upgrade. C++ ABI stability is a v1.0 goal, not a v0.1 promise.
+The C++ static library `libmarrow_core.a` does **not** have ABI stability yet. The C++ headers are not versioned; downstream C++ consumers should pin to a specific git commit and rebuild on upgrade. C++ ABI stability is a v1.0 goal, not a v0.1 promise.
 
 ## How to file a stability complaint
 

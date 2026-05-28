@@ -1,16 +1,16 @@
 """Structured logging helper.
 
-Configures the ``agentcore`` logger family to emit JSON lines. Opt-in;
+Configures the ``marrow`` logger family to emit JSON lines. Opt-in;
 the library itself uses Python's standard logging module and emits
 nothing if you don't configure a handler.
 
 Usage::
 
-    import agentcore.logging_config as lc
+    import marrow.logging_config as lc
     lc.configure_json(level="INFO")
 
     import logging
-    logging.getLogger("agentcore").info("started")
+    logging.getLogger("marrow").info("started")
 """
 from __future__ import annotations
 
@@ -51,7 +51,7 @@ class JsonFormatter(logging.Formatter):
         return json.dumps(payload, ensure_ascii=False)
 
 
-def configure_json(level: str | int = "INFO", logger_name: str = "agentcore") -> None:
+def configure_json(level: str | int = "INFO", logger_name: str = "marrow") -> None:
     """Install a JSON handler on the named logger. Idempotent — if the
     logger already has a JSON handler, do nothing."""
     logger = logging.getLogger(logger_name)

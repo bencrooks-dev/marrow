@@ -3,7 +3,7 @@
 `Graph` is a fluent multi-agent workflow builder. Compose in Python, freeze for execution. No YAML, no string-eval magic.
 
 ```python
-from agentcore import Graph, run_graph
+from marrow import Graph, run_graph
 
 g = (Graph()
      .start("researcher")

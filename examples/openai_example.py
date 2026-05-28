@@ -1,13 +1,13 @@
 """Real provider — OpenAI. Requires OPENAI_API_KEY.
 
-    pip install 'agentcore[openai]'
+    pip install 'marrow-rt[openai]'
     OPENAI_API_KEY=sk-... python examples/openai_example.py
 """
 import os
 import sys
 
-from agentcore import Agent, Runtime
-from agentcore.providers import OpenAIProvider
+from marrow import Agent, Runtime
+from marrow.providers import OpenAIProvider
 
 
 def main() -> None:

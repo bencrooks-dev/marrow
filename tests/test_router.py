@@ -1,7 +1,7 @@
 """Router-focused tests including failure modes."""
 import pytest
 
-from agentcore import Agent, MockProvider, Runtime
+from marrow import Agent, MockProvider, Runtime
 
 
 def test_unknown_recipient_raises():

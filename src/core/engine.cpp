@@ -2,7 +2,7 @@
 
 #include <stdexcept>
 
-namespace agentcore {
+namespace marrow {
 
 namespace {
 std::int64_t now_ms() {
@@ -318,4 +318,4 @@ bool Engine::is_shutdown() const noexcept {
     return shutdown_.load(std::memory_order_acquire);
 }
 
-}  // namespace agentcore
+}  // namespace marrow

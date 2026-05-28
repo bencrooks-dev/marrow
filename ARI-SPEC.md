@@ -2,7 +2,7 @@
 
 **Version:** 0.1 (Draft)
 **Status:** Draft — Request for Comments
-**Reference implementation:** [`agentcore`](./README.md)
+**Reference implementation:** [`marrow`](./README.md)
 **License:** Apache-2.0 (spec text under CC BY 4.0 — see [§13](#13-licensing-of-this-document))
 
 ---
@@ -22,7 +22,7 @@ runs an agent turn.
 
 A runtime that implements this contract is **ARI-conformant** and can be
 substituted for any other ARI-conformant runtime without changing application
-code that targets the interface. `agentcore` is the reference implementation.
+code that targets the interface. `marrow` is the reference implementation.
 
 ---
 
@@ -491,8 +491,8 @@ and MUST NOT be used in distribution materials.
 
 The ARI specification text is offered under **CC BY 4.0** so that any party may
 implement it freely and reproduce the contract. The reference implementation
-(`agentcore`) is licensed separately under Apache-2.0. Implementing ARI requires
-no license to the `agentcore` code.
+(`marrow`) is licensed separately under Apache-2.0. Implementing ARI requires
+no license to the `marrow` code.
 
 ---
 
@@ -507,7 +507,7 @@ runtime need not match these signatures, only the behavior in §§2–10.
 [`src/core/engine.hpp`](./src/core/engine.hpp).
 
 **Python (host binding):** `Agent`, `Runtime`, `tool`/`ToolBox`, `Graph`,
-`StateStore`, `TraceSink`, `AsyncRuntime` — see [`python/agentcore/`](./python/agentcore/).
+`StateStore`, `TraceSink`, `AsyncRuntime` — see [`python/marrow/`](./python/marrow/).
 
 ## Appendix B: Conformance checklist
 
@@ -528,5 +528,5 @@ ARI-Server add their own checklists (maintained alongside the Conformance Kit).
 
 ---
 
-*ARI 0.1 (Draft). Reference implementation: agentcore. Comments and proposed
+*ARI 0.1 (Draft). Reference implementation: marrow. Comments and proposed
 changes: open an issue tagged `ari-spec`.*

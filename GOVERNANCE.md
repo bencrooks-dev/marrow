@@ -1,14 +1,14 @@
 # Governance
 
 This document explains how decisions are made for **ARI** (the [Agent Runtime
-Interface](ARI-SPEC.md) specification) and for **agentcore** (its reference
+Interface](ARI-SPEC.md) specification) and for **marrow** (its reference
 implementation). It is deliberately honest about the project's current stage and
 the path to neutral governance — because a standard that looks like one company's
 property does not get adopted.
 
 ## Two things, governed differently
 
-| | **ARI** (the standard) | **agentcore** (the implementation) |
+| | **ARI** (the standard) | **marrow** (the implementation) |
 |---|---|---|
 | What it is | A language-neutral spec | An Apache-2.0 codebase |
 | License | CC BY 4.0 (spec text) | Apache-2.0 |
@@ -16,12 +16,12 @@ property does not get adopted.
 | Goal | belong to the whole industry | be the canonical, conformant runtime |
 
 Keeping these distinct is a governance requirement, not a formality: anyone may
-implement ARI without touching agentcore, and the spec must be able to outlive any
+implement ARI without touching marrow, and the spec must be able to outlive any
 single implementation.
 
 ## Current stage (be honest)
 
-ARI is at **v0.1 (Draft)** and agentcore is **pre-1.0**. Today the project is
+ARI is at **v0.1 (Draft)** and marrow is **pre-1.0**. Today the project is
 **maintainer-led** (a small maintainer set, effectively a BDFL model). This is
 normal and appropriate for this stage — but it is explicitly a *stage*, not the
 end state. We do not pretend to be a foundation we are not.
@@ -51,7 +51,7 @@ triggers, in order:
    org/repo) under an open-governance body. MCP's donation to the Linux
    Foundation's Agentic AI Foundation (Dec 2025) is the model we intend to follow.
 
-Until trigger 3, this repository is the spec's interim home, and `agentcore`'s
+Until trigger 3, this repository is the spec's interim home, and `marrow`'s
 maintainers are its interim stewards.
 
 ## Conformance authority

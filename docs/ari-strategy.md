@@ -42,7 +42,7 @@ A standard is not a marketing claim; it is three things that must all exist:
 | Artifact | Status | Where |
 |---|---|---|
 | **The spec** — normative contract with MUST/SHOULD/MAY | ✅ drafted | [`ARI-SPEC.md`](../ARI-SPEC.md) |
-| **A reference implementation** — proof the spec is buildable | ✅ exists | `agentcore` (this repo) |
+| **A reference implementation** — proof the spec is buildable | ✅ exists | `marrow` (this repo) |
 | **A conformance kit** — lets a *third party* prove they comply | ⛔ to build | `ari-conformance/` (proposed) |
 
 The third is what most "standards" are missing and why they stay vanity docs.
@@ -57,7 +57,7 @@ what makes the spec falsifiable rather than aspirational.
   numbered requirement in the spec (the [Appendix B](../ARI-SPEC.md#appendix-b-conformance-checklist) checklist becomes executable).
 - A thin per-language harness that drives a runtime through the corpus.
 - A published results format ("ARI 0.1 · Core+Embedded · kit v0.1 · pass 47/47").
-- Run `agentcore` against it in CI so the reference implementation is provably
+- Run `marrow` against it in CI so the reference implementation is provably
   conformant and regressions are caught.
 
 ---
@@ -98,7 +98,7 @@ Once there is a second implementation and outside interest, move the spec out of
 this repo into a neutral home (its own `ari-spec` repo/org, CC BY 4.0 text, an
 open issue/RFC process). Standards die when they look like one company's
 property. Cole's standards (OpenStack, OCP) all moved to foundations precisely to
-shed that perception. Keep `agentcore` as the reference implementation, but let
+shed that perception. Keep `marrow` as the reference implementation, but let
 the *spec* belong to everyone.
 
 ---
@@ -121,18 +121,17 @@ the *spec* belong to everyone.
 
 ## 5. Naming, trademark, and the spec/impl split
 
-- **ARI** = the standard (the interface). **agentcore** = the reference
+- **ARI** = the standard (the interface). **marrow** = the reference
   implementation. Keep these rigorously distinct in all materials — conflating
   them makes ARI look like a single vendor's API and kills neutral adoption.
-- **⚠ Naming collision — resolve before any go-to-market push.** "AgentCore" is
-  now **Amazon Bedrock AgentCore** (AWS; GA 2025-10-13), which itself ships an
-  "AgentCore Runtime" — the *same layer this project targets*. This is a direct
-  name + semantic collision with a major cloud vendor: it will lose every search,
-  invites trademark risk, and an investor/operator will flag it on slide one.
-  **Recommendation:** keep **ARI** (the standard name is defensible) and **rename
-  the implementation** to something ownable before evangelizing. The standard
-  surviving a rename of its reference implementation is exactly why ARI and
-  agentcore are kept separate (above). Treat this as a blocking pre-launch task.
+- **✓ Naming collision resolved (2026-05-28): renamed `agentcore` → `marrow`.**
+  The prior name collided head-on with **Amazon Bedrock AgentCore** (AWS; GA
+  2025-10-13), which ships an "AgentCore Runtime" targeting the *same layer* —
+  it would have lost every search and invited trademark risk. The implementation
+  is now **marrow** (PyPI: `marrow-rt`); **ARI** (the standard) is unchanged. That
+  the standard survived an implementation rename is exactly why the two are kept
+  distinct (above). Remaining founder tasks: rename the GitHub repo to `marrow`,
+  claim the `marrow-rt` PyPI project, and grab a docs domain.
 - Reserve the obvious homes early (an `ari-spec` repo, a docs domain) so the
   standard has a neutral-looking address when Rung 5 arrives.
 - Spec text under **CC BY 4.0** (anyone can implement); reference code under
@@ -146,8 +145,8 @@ the *spec* belong to everyone.
 1. **Merge the spec + repositioned README** so the repo reads as "reference
    implementation of ARI," not "another agent framework." *(this change)*
 2. **Stand up `ari-conformance/`** with the Appendix B checklist as executable
-   tests; wire it into CI against `agentcore`.
-3. **Port Tilo's agent loop onto an ARI-Embedded build** of agentcore; capture
+   tests; wire it into CI against `marrow`.
+3. **Port Tilo's agent loop onto an ARI-Embedded build** of marrow; capture
    the gaps the real robot exposes and fold them into ARI 0.2.
 4. **Write the MCP adapter** (expose ARI tools over MCP) — the cheapest way to be
    seen as ecosystem-complementary.

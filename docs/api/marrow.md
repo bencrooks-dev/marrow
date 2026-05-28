@@ -1,8 +1,8 @@
-# `agentcore`
+# `marrow`
 
 Auto-generated reference. For tutorials, see [Concepts](../concepts/agents.md).
 
-::: agentcore
+::: marrow
     options:
       members:
         - Agent

@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentcore import (
+from marrow import (
     Agent,
     InMemoryStateStore,
     MockProvider,

@@ -1,6 +1,6 @@
 """research_agent — three-agent research → write → edit pipeline.
 
-This is a small but real agentcore application. Run with::
+This is a small but real marrow application. Run with::
 
     python -m examples.apps.research_agent --topic "graph databases"
 """
@@ -12,7 +12,7 @@ import os
 import sys
 from pathlib import Path
 
-from agentcore import (
+from marrow import (
     Agent,
     Graph,
     MockProvider,
@@ -40,13 +40,13 @@ def search(topic: str, max_results: int = 5) -> list[str]:
 def _make_provider(name: str, model: str | None):
     """Resolve a Provider by short name. Falls back to MockProvider."""
     if name == "openai":
-        from agentcore.providers import OpenAIProvider
+        from marrow.providers import OpenAIProvider
         return OpenAIProvider(model=model or "gpt-4o-mini")
     if name == "anthropic":
-        from agentcore.providers import AnthropicProvider
+        from marrow.providers import AnthropicProvider
         return AnthropicProvider(model=model or "claude-sonnet-4-6")
     if name == "ollama":
-        from agentcore.providers import OllamaProvider
+        from marrow.providers import OllamaProvider
         return OllamaProvider(model=model or "llama3.2")
     return MockProvider(model or "mock")
 

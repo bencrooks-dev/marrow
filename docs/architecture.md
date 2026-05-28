@@ -8,12 +8,12 @@
 +----------------------+------------------------+
                        |
 +----------------------v------------------------+
-|       Python SDK  (agentcore.sdk)             |
+|       Python SDK  (marrow.sdk)             |
 |  Agent · Runtime · ToolBox · Graph · Async    |
 +----------------------+------------------------+
                        |  Pybind11 (GIL release on hot paths)
 +----------------------v------------------------+
-|        C++ engine  (libagentcore_core)        |
+|        C++ engine  (libmarrow_core)        |
 |                                               |
 |  Engine ──► AgentRouter ◄──► AgentState[]     |
 |     │                                         |
@@ -42,7 +42,7 @@
 
 The Pybind11 bindings release the GIL on `Provider::generate` and `generate_stream`. The `PYBIND11_OVERRIDE` trampoline re-acquires the GIL when the call ends up in a Python subclass. Concurrent agent steps from threads scale linearly until your provider's rate limit is the bottleneck.
 
-A dedicated [`tests/test_concurrency.py`](https://github.com/bencrooks-dev/agentcore/blob/main/tests/test_concurrency.py) exercises:
+A dedicated [`tests/test_concurrency.py`](https://github.com/bencrooks-dev/marrow/blob/main/tests/test_concurrency.py) exercises:
 
 - Concurrent `Engine.create_agent` + `Router.send` (catches TOCTOU)
 - Concurrent `ToolRegistry.invoke` (catches GIL races)
@@ -75,4 +75,4 @@ For a workload where orchestration is the bottleneck — many agents, large hist
 
 - Single-agent, low-throughput, network-bound workloads. Use whatever framework feels easiest.
 - Heavy use of arbitrary Python tools per step. The C++ → Python boundary is fast but not free; >1000 tool calls per step will dominate the timing.
-- Workflows that need first-class distributed routing. `agentcore` is single-process by design today.
+- Workflows that need first-class distributed routing. `marrow` is single-process by design today.

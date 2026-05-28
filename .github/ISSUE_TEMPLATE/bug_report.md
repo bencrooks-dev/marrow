@@ -24,7 +24,7 @@ If the bug requires real provider keys, please scrub them and describe the reque
 
 ## Environment
 
-- agentcore version: `pip show agentcore` →
+- marrow version: `pip show marrow` →
 - Python version: `python --version` →
 - OS: <!-- macOS 14, Ubuntu 22.04, Windows 11, ... -->
 - Installed extras: <!-- [openai], [anthropic], [ollama], [all], or none -->

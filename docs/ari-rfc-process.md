@@ -5,7 +5,7 @@ accepted. The point of a written process is that **the rules for changing the
 standard are themselves on the record** — adopters need to trust that the contract
 won't shift under them arbitrarily.
 
-This process governs the *spec*. Changes to the *implementation* (`agentcore`)
+This process governs the *spec*. Changes to the *implementation* (`marrow`)
 follow normal PRs and [STABILITY.md](../STABILITY.md).
 
 ## When you need an RFC
@@ -66,7 +66,7 @@ The exact normative change (MUST/SHOULD/MAY), as it would read in ARI-SPEC.md.
 - Does this make any currently-conformant runtime non-conformant? If so, migration.
 
 ## Reference implementation
-Link to an agentcore sketch/PR, or describe how it'd be implemented.
+Link to an marrow sketch/PR, or describe how it'd be implemented.
 
 ## Alternatives considered
 What else, and why not.

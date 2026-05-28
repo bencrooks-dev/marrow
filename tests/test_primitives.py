@@ -6,7 +6,7 @@ import time
 
 import pytest
 
-from agentcore import (
+from marrow import (
     Agent,
     CancelToken,
     GenerationResponse,

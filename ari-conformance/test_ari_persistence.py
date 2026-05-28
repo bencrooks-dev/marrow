@@ -4,16 +4,16 @@ Persistence is OPTIONAL for ARI-Core and REQUIRED for ARI-Server. These tests
 verify the StateStore contract: lossless round-trip (including metadata) and an
 explicit "absent" result for an unknown id.
 
-Requires the compiled `agentcore` extension; skipped if it isn't built.
+Requires the compiled `marrow` extension; skipped if it isn't built.
 """
 from __future__ import annotations
 
 import pytest
 
-agentcore = pytest.importorskip("agentcore")
+marrow = pytest.importorskip("marrow")
 
-from agentcore import Agent, Message, MockProvider, Role, Runtime  # noqa: E402
-from agentcore.state_store import (  # noqa: E402
+from marrow import Agent, Message, MockProvider, Role, Runtime  # noqa: E402
+from marrow.state_store import (  # noqa: E402
     InMemoryStateStore,
     SQLiteStateStore,
 )

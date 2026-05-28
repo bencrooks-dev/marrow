@@ -1,20 +1,20 @@
-# agentcore / ARI — Threat Model
+# marrow / ARI — Threat Model
 
-**Scope:** the `agentcore` reference runtime and the security properties an
+**Scope:** the `marrow` reference runtime and the security properties an
 [ARI](ARI-SPEC.md)-conformant runtime should provide. **Method:** STRIDE over the
 real attack surface, grounded in the current code (`src/core/`, `src/bindings/`,
-`python/agentcore/`). **Status:** living document for a pre-1.0 project. This is a
+`python/marrow/`). **Status:** living document for a pre-1.0 project. This is a
 *static* review, not a substitute for an independent audit, fuzzing campaign, or
 penetration test of a deployed system.
 
 ---
 
-## 1. What agentcore is (and isn't), security-wise
+## 1. What marrow is (and isn't), security-wise
 
-agentcore is a **library**, not a service or a sandbox. It runs an agent loop in
+marrow is a **library**, not a service or a sandbox. It runs an agent loop in
 your process. Two consequences drive everything below:
 
-1. **Registered tool bodies execute with full host privileges.** agentcore does
+1. **Registered tool bodies execute with full host privileges.** marrow does
    not and cannot sandbox a tool you register. If you register a tool that calls
    `subprocess.run`, and a prompt-injected model invokes it, that is your design,
    not a runtime vulnerability.
@@ -79,7 +79,7 @@ this commit.
 
 - **Prompt-injection driving tool calls** — inherent to agents. Mitigate at the
   host: least-privilege tools, per-`Runtime` isolation, `ToolBox(strict=True)`,
-  human-in-the-loop for dangerous actions. agentcore bounds blast radius; it does
+  human-in-the-loop for dangerous actions. marrow bounds blast radius; it does
   not eliminate this class.
 - **Compromised dependency** in an optional provider extra — mitigated by audits
   + pinning; not eliminated.

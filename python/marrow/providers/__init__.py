@@ -1,6 +1,6 @@
 """Real LLM provider implementations.
 
-Imports are lazy so that ``import agentcore`` does not require the
+Imports are lazy so that ``import marrow`` does not require the
 ``openai`` / ``anthropic`` / ``httpx`` packages. The provider modules
 import their backing SDKs at module load; we catch that to produce a
 helpful install hint.
@@ -15,7 +15,7 @@ def __getattr__(name: str):
         except ImportError as e:
             raise ImportError(
                 "OpenAIProvider requires the openai SDK. "
-                "Install with: pip install 'agentcore[openai]'"
+                "Install with: pip install 'marrow-rt[openai]'"
             ) from e
         return OpenAIProvider
 
@@ -25,7 +25,7 @@ def __getattr__(name: str):
         except ImportError as e:
             raise ImportError(
                 "AnthropicProvider requires the anthropic SDK. "
-                "Install with: pip install 'agentcore[anthropic]'"
+                "Install with: pip install 'marrow-rt[anthropic]'"
             ) from e
         return AnthropicProvider
 
@@ -35,11 +35,11 @@ def __getattr__(name: str):
         except ImportError as e:
             raise ImportError(
                 "OllamaProvider requires httpx. "
-                "Install with: pip install 'agentcore[ollama]'"
+                "Install with: pip install 'marrow-rt[ollama]'"
             ) from e
         return OllamaProvider
 
-    raise AttributeError(f"module 'agentcore.providers' has no attribute {name!r}")
+    raise AttributeError(f"module 'marrow.providers' has no attribute {name!r}")
 
 
 __all__ = ["OpenAIProvider", "AnthropicProvider", "OllamaProvider"]

@@ -2,13 +2,13 @@
 
 Measures realistic per-step cost of a 3-agent pipeline running for many
 iterations. Mock provider returns instantly so the measurement is
-dominated by agentcore overhead (state copy, routing, tool dispatch).
+dominated by marrow overhead (state copy, routing, tool dispatch).
 """
 from __future__ import annotations
 
 import time
 
-from agentcore import Agent, MockProvider, Runtime
+from marrow import Agent, MockProvider, Runtime
 
 from ._harness import Result, print_header, print_row
 
@@ -52,7 +52,7 @@ def run_pipeline(iterations: int) -> Result:
 
 
 def main() -> None:
-    print_header("agentcore end-to-end (mock provider)")
+    print_header("marrow end-to-end (mock provider)")
     print_row(run_pipeline(2_000))
     print_row(run_pipeline(10_000))
 

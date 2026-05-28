@@ -1,6 +1,6 @@
 # Benchmarks
 
-Quick numbers on the orchestration overhead of agentcore. **These measure native overhead, not LLM latency** — every benchmark uses `MockProvider` or a trivial echo so the LLM call cost is zero. That isolates the cost of the framework itself.
+Quick numbers on the orchestration overhead of marrow. **These measure native overhead, not LLM latency** — every benchmark uses `MockProvider` or a trivial echo so the LLM call cost is zero. That isolates the cost of the framework itself.
 
 ## Run
 
@@ -30,9 +30,9 @@ python -m benchmarks.compare_langgraph  # head-to-head (needs '.[bench]')
 Higher ops/s = lower per-operation overhead.
 Lower p50/p99 = faster individual operations.
 
-These numbers are **not** the speed of a real agent application — that is dominated by network latency to whichever LLM you call. They tell you how much overhead `agentcore` adds on top.
+These numbers are **not** the speed of a real agent application — that is dominated by network latency to whichever LLM you call. They tell you how much overhead `marrow` adds on top.
 
-If you see `agentcore` outperforming LangGraph by 2-10× on the orchestration microbench but only 1.05× end-to-end, that's the expected pattern: most real workloads are I/O-bound regardless of framework choice.
+If you see `marrow` outperforming LangGraph by 2-10× on the orchestration microbench but only 1.05× end-to-end, that's the expected pattern: most real workloads are I/O-bound regardless of framework choice.
 
 ## Reproducibility
 

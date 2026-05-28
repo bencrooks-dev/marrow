@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Render the agentcore / ARI documentation set to PDF with pandoc.
+# Render the marrow / ARI documentation set to PDF with pandoc.
 #
 # Used by .github/workflows/docs-pdf.yml. Requires: pandoc + wkhtmltopdf
 # (an HTML-based PDF engine — chosen over LaTeX because several docs contain

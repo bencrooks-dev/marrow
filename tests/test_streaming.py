@@ -1,5 +1,5 @@
 """Streaming tests — MockProvider should emit multiple chunks."""
-from agentcore import Agent, MockProvider, Runtime
+from marrow import Agent, MockProvider, Runtime
 
 
 def test_stream_emits_chunks_and_appends_history():
@@ -28,7 +28,7 @@ def test_stream_collects_full_text():
 def test_subclassed_python_provider_streams():
     """A Python subclass of Provider can override generate_stream and have
     C++ route into it. This exercises the trampoline."""
-    from agentcore import GenerationResponse, PyProviderBase
+    from marrow import GenerationResponse, PyProviderBase
 
     class FixedProvider(PyProviderBase):
         def name(self):

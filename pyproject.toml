@@ -3,13 +3,13 @@ requires = ["scikit-build-core>=0.12.2", "pybind11>=3.0.4"]
 build-backend = "scikit_build_core.build"
 
 [project]
-name = "agentcore"
+name = "marrow-rt"
 version = "0.1.0"
 description = "Lightweight C++ core for AI agent orchestration"
 readme = "README.md"
 requires-python = ">=3.9"
 license = {text = "Apache-2.0"}
-authors = [{name = "agentcore contributors"}]
+authors = [{name = "marrow contributors"}]
 keywords = ["agents", "llm", "orchestration", "cpp", "pybind11"]
 classifiers = [
     "Development Status :: 2 - Pre-Alpha",
@@ -45,10 +45,10 @@ docs = [
 ]
 
 [project.urls]
-Source = "https://github.com/bencrooks-dev/agentcore"
-Issues = "https://github.com/bencrooks-dev/agentcore/issues"
+Source = "https://github.com/bencrooks-dev/marrow"
+Issues = "https://github.com/bencrooks-dev/marrow/issues"
 
 [tool.scikit-build]
-wheel.packages = ["python/agentcore"]
+wheel.packages = ["python/marrow"]
 cmake.version = ">=3.18"
 build-dir = "build/{wheel_tag}"

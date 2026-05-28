@@ -7,7 +7,7 @@ A `Runtime` owns the `Engine`, registers agents, and provides routing + persiste
 ## Creating agents
 
 ```python
-from agentcore import Agent, Runtime, MockProvider
+from marrow import Agent, Runtime, MockProvider
 
 rt = Runtime()
 agent = rt.add(Agent(name="researcher",
@@ -43,7 +43,7 @@ rt.handoff(frm="researcher", to="writer", text="research result here")
 ## Cancellation
 
 ```python
-from agentcore import CancelToken
+from marrow import CancelToken
 
 token = CancelToken()
 # ... start work, in another thread:
@@ -56,7 +56,7 @@ token.cancel()
 Cross-cutting concerns are configured on the `Runtime` and apply to every agent it owns:
 
 ```python
-from agentcore import Runtime, RateLimiter, RetryPolicy, PrintTraceSink, UsageTracker
+from marrow import Runtime, RateLimiter, RetryPolicy, PrintTraceSink, UsageTracker
 
 rt = Runtime(
     rate_limiter=RateLimiter(rate=10, capacity=20),    # 10 calls/s, burst 20

@@ -1,7 +1,7 @@
-// Pure-C++ usage of the agentcore engine — no Python involved.
+// Pure-C++ usage of the marrow engine — no Python involved.
 //
 // Proves the README claim that the core is embeddable from C++: the
-// libagentcore_core.a static library can be linked directly into a
+// libmarrow_core.a static library can be linked directly into a
 // C++ application that wants the agent primitives (state, history,
 // router, cache, tool registry) without the Python interpreter.
 //
@@ -9,14 +9,14 @@
 //
 //     mkdir build && cd build
 //     cmake .. && cmake --build .
-//     ./agentcore_embed_demo
+//     ./marrow_embed_demo
 
 #include <iostream>
 #include <string>
 
 #include "engine.hpp"
 
-using namespace agentcore;
+using namespace marrow;
 
 int main() {
     Engine engine;

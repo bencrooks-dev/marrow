@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import json
 
-from agentcore import Agent, MockProvider, Runtime, ToolBox, tool
+from marrow import Agent, MockProvider, Runtime, ToolBox, tool
 
 from ._harness import Result, print_header, print_row, time_loop
 
@@ -87,7 +87,7 @@ def run_all() -> list[Result]:
 
 
 def main() -> None:
-    print_header("agentcore micro-benchmarks")
+    print_header("marrow micro-benchmarks")
     for r in run_all():
         print_row(r)
 

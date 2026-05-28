@@ -1,6 +1,6 @@
 """Ollama provider — talks to a local Ollama daemon via its HTTP API.
 
-Requires: ``pip install 'agentcore[ollama]'`` (which installs ``httpx``).
+Requires: ``pip install 'marrow-rt[ollama]'`` (which installs ``httpx``).
 No API key needed; defaults to http://localhost:11434.
 """
 from __future__ import annotations
@@ -9,7 +9,7 @@ import json
 
 import httpx
 
-from .. import _agentcore as _c
+from .. import _marrow as _c
 from ..sdk import PyProviderBase, raise_if_cancelled, request_timeout_seconds
 
 _ROLE_MAP = {

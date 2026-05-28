@@ -11,6 +11,6 @@ We follow the [Contributor Covenant, version 2.1](https://www.contributor-covena
 
 ## Reporting
 
-If you experience or witness behavior that violates this code, please contact the maintainers via a [private security advisory](https://github.com/bencrooks-dev/agentcore/security/advisories/new) or email — we treat conduct reports with the same confidentiality as security reports.
+If you experience or witness behavior that violates this code, please contact the maintainers via a [private security advisory](https://github.com/bencrooks-dev/marrow/security/advisories/new) or email — we treat conduct reports with the same confidentiality as security reports.
 
 The full Contributor Covenant text is canonical; this file is a pointer. Read it at the link above for enforcement procedures, scope, and responsibilities.

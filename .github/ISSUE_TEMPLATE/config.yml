@@ -1,8 +1,8 @@
 blank_issues_enabled: false
 contact_links:
   - name: Security report
-    url: https://github.com/bencrooks-dev/agentcore/security/advisories/new
+    url: https://github.com/bencrooks-dev/marrow/security/advisories/new
     about: Report a vulnerability privately (do not file a public issue).
   - name: Question or discussion
-    url: https://github.com/bencrooks-dev/agentcore/discussions
+    url: https://github.com/bencrooks-dev/marrow/discussions
     about: Open a discussion if you have a question or want to chat through an idea.

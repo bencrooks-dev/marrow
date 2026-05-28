@@ -1,12 +1,12 @@
 """Smoke tests — module imports, two-agent pipeline runs."""
-from agentcore import Agent, MockProvider, Runtime
+from marrow import Agent, MockProvider, Runtime
 
 
 def test_module_imports():
-    import agentcore
-    assert agentcore.__version__
-    assert hasattr(agentcore, "Engine") is False  # Engine is internal
-    assert agentcore.Role.User is not None
+    import marrow
+    assert marrow.__version__
+    assert hasattr(marrow, "Engine") is False  # Engine is internal
+    assert marrow.Role.User is not None
 
 
 def test_two_agent_handoff():

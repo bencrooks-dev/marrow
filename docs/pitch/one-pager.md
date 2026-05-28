@@ -1,4 +1,4 @@
-# agentcore — one-pager
+# marrow — one-pager
 
 **The embeddable agent runtime for AI that runs where you can't ship Python.**
 Reference implementation of **ARI**, the open Agent Runtime Interface.
@@ -12,7 +12,7 @@ native apps. Every mature framework (LangChain, LangGraph, CrewAI, AutoGen) is
 2025*). You cannot ship a CPython runtime into a real-time robot or a customer's
 native binary.
 
-**Solution.** **agentcore** is a native **C++17** agent runtime — state, providers,
+**Solution.** **marrow** is a native **C++17** agent runtime — state, providers,
 tools, routing, lifecycle — embeddable with **no managed runtime required**,
 ergonomic from Python. It is the **reference implementation of ARI**, an open
 standard for the agent *runtime* layer that sits **beneath MCP and A2A**
@@ -39,4 +39,4 @@ background]`; raising `[$1.5M pre-seed, illustrative]` for `[embedded runtime, T
 integration, a second conformant implementation, standards evangelism]`.
 
 **Links.** Spec: `ARI-SPEC.md` · Strategy: `docs/ari-strategy.md` · Threat model:
-`THREAT-MODEL.md` · Repo: github.com/bencrooks-dev/agentcore
+`THREAT-MODEL.md` · Repo: github.com/bencrooks-dev/marrow

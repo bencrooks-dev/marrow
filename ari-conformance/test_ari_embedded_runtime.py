@@ -13,16 +13,16 @@ import threading
 
 import pytest
 
-agentcore = pytest.importorskip("agentcore")
+marrow = pytest.importorskip("marrow")
 
-from agentcore import (  # noqa: E402
+from marrow import (  # noqa: E402
     CancelToken,
     Message,
     OverflowPolicy,
     Role,
     Runtime,
 )
-from agentcore.tracing import NullTraceSink  # noqa: E402
+from marrow.tracing import NullTraceSink  # noqa: E402
 
 
 def test_inbox_can_be_bounded_finite():

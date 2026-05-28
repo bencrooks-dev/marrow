@@ -79,7 +79,7 @@ jobs:
       contains(github.ref_name, 'b')
     environment:
       name: testpypi
-      url: https://test.pypi.org/p/agentcore
+      url: https://test.pypi.org/p/marrow
     permissions:
       id-token: write   # trusted publishing
     steps:
@@ -101,7 +101,7 @@ jobs:
       github.event.action == 'published'
     environment:
       name: pypi
-      url: https://pypi.org/p/agentcore
+      url: https://pypi.org/p/marrow
     permissions:
       id-token: write   # trusted publishing
     steps:

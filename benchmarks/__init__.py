@@ -1,4 +1,4 @@
-"""agentcore benchmark suite.
+"""marrow benchmark suite.
 
 Run the full suite:
 

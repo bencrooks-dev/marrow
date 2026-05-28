@@ -1,4 +1,4 @@
-"""Comparison: same workload, agentcore vs. LangGraph.
+"""Comparison: same workload, marrow vs. LangGraph.
 
 Run with the bench extras installed::
 
@@ -14,12 +14,12 @@ from __future__ import annotations
 
 import time
 
-from agentcore import Agent, MockProvider, Runtime
+from marrow import Agent, MockProvider, Runtime
 
 from ._harness import Result, print_header, print_row
 
 
-def bench_agentcore(iters: int) -> Result:
+def bench_marrow(iters: int) -> Result:
     rt = Runtime()
     provider = MockProvider()
     a = rt.add(Agent("step", provider))
@@ -32,7 +32,7 @@ def bench_agentcore(iters: int) -> Result:
         a.append_user("hi")
     elapsed = time.perf_counter() - t0
     return Result(
-        name="agentcore: single-step loop",
+        name="marrow: single-step loop",
         ops=iters, duration_s=elapsed,
         p50_us=elapsed / iters * 1e6, p99_us=elapsed / iters * 1e6,
         ops_per_s=iters / elapsed,
@@ -74,18 +74,18 @@ def bench_langgraph(iters: int) -> Result | None:
 
 
 def main() -> None:
-    print_header("agentcore vs LangGraph (orchestration overhead only)")
+    print_header("marrow vs LangGraph (orchestration overhead only)")
     print("note: mock LLM, no network, no tools — measures orchestration cost.\n")
     iters = 5_000
-    a = bench_agentcore(iters)
+    a = bench_marrow(iters)
     print_row(a)
     b = bench_langgraph(iters)
     if b is not None:
         print_row(b)
         ratio = b.ops_per_s / a.ops_per_s if a.ops_per_s > 0 else 0
-        print(f"\nratio (LangGraph / agentcore ops/s) = {ratio:.2f}x")
+        print(f"\nratio (LangGraph / marrow ops/s) = {ratio:.2f}x")
         if ratio < 1:
-            print(f"agentcore is {1/ratio:.2f}x faster on this microbench.")
+            print(f"marrow is {1/ratio:.2f}x faster on this microbench.")
         else:
             print(f"LangGraph is {ratio:.2f}x faster on this microbench.")
 

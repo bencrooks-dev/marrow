@@ -1,23 +1,23 @@
 # Providers
 
-A `Provider` is anything that implements `name()`, `generate(req)`, and `generate_stream(req, on_chunk)`. The base class lives in C++ (`agentcore.PyProviderBase`); Python subclasses are wired through a Pybind11 trampoline so C++ can call back into Python.
+A `Provider` is anything that implements `name()`, `generate(req)`, and `generate_stream(req, on_chunk)`. The base class lives in C++ (`marrow.PyProviderBase`); Python subclasses are wired through a Pybind11 trampoline so C++ can call back into Python.
 
 ## Built-in providers
 
 ```python
-from agentcore.providers import OpenAIProvider, AnthropicProvider, OllamaProvider
+from marrow.providers import OpenAIProvider, AnthropicProvider, OllamaProvider
 
 openai     = OpenAIProvider(model="gpt-4o-mini")
 anthropic  = AnthropicProvider(model="claude-sonnet-4-6")  # caches system prompt
 ollama     = OllamaProvider(model="llama3.2")              # local daemon
 ```
 
-Each requires its respective install extra: `agentcore[openai]`, `agentcore[anthropic]`, `agentcore[ollama]`.
+Each requires its respective install extra: `marrow-rt[openai]`, `marrow-rt[anthropic]`, `marrow-rt[ollama]`.
 
 ## Writing your own provider
 
 ```python
-from agentcore import GenerationResponse, PyProviderBase
+from marrow import GenerationResponse, PyProviderBase
 
 class MyProvider(PyProviderBase):
     def name(self):

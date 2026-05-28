@@ -26,9 +26,9 @@ claim is meaningless and is disallowed by the spec.
 
 | Runtime | Language | Profiles | Spec | Kit | Result | Evidence |
 |---|---|---|---|---|---|---|
-| [agentcore](README.md) | C++ / Python | Core, Embedded (structural) | 0.1 | v0.1 | pending first green CI run | [`conformance` CI job](.github/workflows/ci.yml) |
+| [marrow](README.md) | C++ / Python | Core, Embedded (structural) | 0.1 | v0.1 | pending first green CI run | [`conformance` CI job](.github/workflows/ci.yml) |
 
-> agentcore's structural ARI-Embedded checks pass locally without a build; the
+> marrow's structural ARI-Embedded checks pass locally without a build; the
 > extension-dependent Core/Embedded checks run in the `conformance` CI job. The
 > row above will be updated with the concrete pass count once that job is green
 > and the gate is flipped from informational to required.

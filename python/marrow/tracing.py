@@ -1,4 +1,4 @@
-"""Tracing hooks for agentcore.
+"""Tracing hooks for marrow.
 
 A :class:`TraceSink` is a context-manager factory: ``with sink.span(name,
 attrs) as span:`` wraps a block of work. Attributes can be added during
@@ -111,7 +111,7 @@ class OpenTelemetryTraceSink:
     Usage::
 
         from opentelemetry import trace
-        sink = OpenTelemetryTraceSink(trace.get_tracer("agentcore"))
+        sink = OpenTelemetryTraceSink(trace.get_tracer("marrow"))
         runtime = Runtime(trace_sink=sink)
     """
 

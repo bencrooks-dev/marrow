@@ -1,7 +1,7 @@
 """ARI-Core conformance (spec §2–§7).
 
 Maps each test to a numbered ARI requirement and an Appendix B checklist box.
-Requires the compiled `agentcore` extension; skipped if it isn't built.
+Requires the compiled `marrow` extension; skipped if it isn't built.
 """
 from __future__ import annotations
 
@@ -10,9 +10,9 @@ import threading
 
 import pytest
 
-agentcore = pytest.importorskip("agentcore")
+marrow = pytest.importorskip("marrow")
 
-from agentcore import (  # noqa: E402
+from marrow import (  # noqa: E402
     Agent,
     CancelToken,
     Message,
@@ -82,7 +82,7 @@ def test_cancel_token_is_thread_safe():
 
 def test_generation_request_supports_timeout():
     """§3.6: a wall-clock timeout is part of the request contract."""
-    from agentcore import GenerationRequest
+    from marrow import GenerationRequest
 
     req = GenerationRequest()
     assert req.timeout_ms == 0  # default disables

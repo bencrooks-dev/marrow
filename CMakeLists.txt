@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.18)
-project(agentcore LANGUAGES CXX)
+project(marrow LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -17,12 +17,12 @@ endif()
 
 find_package(pybind11 CONFIG REQUIRED)
 
-add_library(agentcore_core STATIC src/core/engine.cpp)
-target_include_directories(agentcore_core PUBLIC src/core)
-set_target_properties(agentcore_core PROPERTIES POSITION_INDEPENDENT_CODE ON)
+add_library(marrow_core STATIC src/core/engine.cpp)
+target_include_directories(marrow_core PUBLIC src/core)
+set_target_properties(marrow_core PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
-pybind11_add_module(_agentcore src/bindings/bindings.cpp)
-target_link_libraries(_agentcore PRIVATE agentcore_core)
-target_include_directories(_agentcore PRIVATE src/core)
+pybind11_add_module(_marrow src/bindings/bindings.cpp)
+target_link_libraries(_marrow PRIVATE marrow_core)
+target_include_directories(_marrow PRIVATE src/core)
 
-install(TARGETS _agentcore LIBRARY DESTINATION agentcore)
+install(TARGETS _marrow LIBRARY DESTINATION marrow)

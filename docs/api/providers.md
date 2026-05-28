@@ -1,11 +1,11 @@
-# `agentcore.providers`
+# `marrow.providers`
 
-::: agentcore.providers
+::: marrow.providers
     options:
       show_root_heading: false
 
-::: agentcore.providers.openai
+::: marrow.providers.openai
 
-::: agentcore.providers.anthropic
+::: marrow.providers.anthropic
 
-::: agentcore.providers.ollama
+::: marrow.providers.ollama

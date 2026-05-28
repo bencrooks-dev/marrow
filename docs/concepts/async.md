@@ -4,7 +4,7 @@ The C++ core releases the GIL on `Provider::generate` and `generate_stream`. The
 
 ```python
 import asyncio
-from agentcore import AsyncRuntime, Agent, MockProvider, Runtime
+from marrow import AsyncRuntime, Agent, MockProvider, Runtime
 
 async def main():
     rt = AsyncRuntime(Runtime())
@@ -28,7 +28,7 @@ When/if the day comes to move concurrency into C++, the `AsyncRuntime` surface s
 
 ```python
 import concurrent.futures
-from agentcore.asyncio_bridge import set_executor
+from marrow.asyncio_bridge import set_executor
 
 set_executor(concurrent.futures.ThreadPoolExecutor(max_workers=32))
 ```

@@ -51,7 +51,7 @@ jobs:
         run: python -m pip install -e ".[test]" coverage pytest-cov -v
 
       - name: Run tests with coverage
-        run: pytest -v --cov=agentcore --cov-report=term-missing
+        run: pytest -v --cov=marrow --cov-report=term-missing
 
       - name: Run examples (smoke)
         shell: bash

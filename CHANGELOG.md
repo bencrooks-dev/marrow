@@ -1,12 +1,21 @@
 # Changelog
 
-All notable changes to `agentcore` are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project adheres to [Semantic Versioning](https://semver.org/) once it reaches 1.0; until then, API breaks may happen at any 0.x bump.
+All notable changes to `marrow` are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project adheres to [Semantic Versioning](https://semver.org/) once it reaches 1.0; until then, API breaks may happen at any 0.x bump.
 
 ## [Unreleased]
 
+### Changed — project renamed
+
+- **Renamed `agentcore` → `marrow`** to avoid a head-on collision with Amazon
+  Bedrock AgentCore (AWS, GA 2025-10-13). Import package is `marrow`; the published
+  distribution is **`marrow-rt`** (`pip install marrow-rt`). C++ namespace, the
+  `_marrow` extension module, and the GitHub repo move with it. **ARI** (the
+  standard) is unchanged. This is a breaking rename — update imports `agentcore` →
+  `marrow`.
+
 ### Added — ARI standard
 
-- **`ARI-SPEC.md`** — the Agent Runtime Interface, a language-neutral spec for the agent runtime layer, with three conformance profiles (Core, Embedded, Server). agentcore is its reference implementation.
+- **`ARI-SPEC.md`** — the Agent Runtime Interface, a language-neutral spec for the agent runtime layer, with three conformance profiles (Core, Embedded, Server). marrow is its reference implementation.
 - **`ari-conformance/`** — executable conformance kit mapping each ARI requirement to a test; wired into CI (`conformance` job). Structural ARI-Embedded checks run without a build.
 - **`docs/ari-strategy.md`, `GOVERNANCE.md`, `CONFORMANCE.md`, `docs/ari-rfc-process.md`** — adoption strategy, governance + path to neutral stewardship, conformance registry, and the spec RFC process.
 - **`THREAT-MODEL.md`** — STRIDE threat model over the real attack surface with severities, trust boundaries, and an ARI-Embedded security profile.
@@ -17,7 +26,7 @@ All notable changes to `agentcore` are documented here. The format follows [Keep
 
 ### Changed — security hardening
 
-- **Cancellation + timeouts are now enforced** (previously plumbed but ignored): `Agent.step`/`stream` honor a pre-call `CancelToken`, and the OpenAI/Anthropic/Ollama providers pass `timeout_ms` through as a per-request wall-clock timeout and re-check cancellation between stream chunks. New helpers: `agentcore.sdk.raise_if_cancelled`, `request_timeout_seconds`.
+- **Cancellation + timeouts are now enforced** (previously plumbed but ignored): `Agent.step`/`stream` honor a pre-call `CancelToken`, and the OpenAI/Anthropic/Ollama providers pass `timeout_ms` through as a per-request wall-clock timeout and re-check cancellation between stream chunks. New helpers: `marrow.sdk.raise_if_cancelled`, `request_timeout_seconds`.
 - **`Message.content` cap can no longer be bypassed** by direct assignment — the binding validates against `kMaxContentBytes` on set (matching `Message.make`).
 - **Tool-error redaction hardened** — default redactor scrubs more secret shapes (AWS/GCP/GitHub/Slack/JWT/Bearer/cred-URLs) and filesystem paths; new `ToolBox(strict=True)` returns the exception type only. New `strict_error_redactor`.
 - **`RetryPolicy` guidance** — default retry set unchanged; documented how to narrow `retry_on` / widen `skip` for non-transient provider errors (4xx/auth) you don't want retried.
@@ -53,7 +62,7 @@ The first **production-primitives release**. Five "gates" from PoC to product cl
   - `PrintTraceSink` (development).
   - `OpenTelemetryTraceSink` (production; wraps an OTel tracer).
 - **`UsageTracker`** + **`UsageRecord`** — token counts per agent/model + estimated cost via configurable pricing tables.
-- **`agentcore.logging_config.configure_json`** — opt-in JSON-line structured logs on the `agentcore` logger.
+- **`marrow.logging_config.configure_json`** — opt-in JSON-line structured logs on the `marrow` logger.
 
 #### Distribution + stability
 
@@ -109,11 +118,11 @@ The first **production-primitives release**. Five "gates" from PoC to product cl
 ### Added
 
 - Streaming through the C++ core: `Provider::generate_stream(req, on_chunk)`, `Agent.stream(on_chunk=...)`. Pybind11 trampoline supports Python subclasses overriding `generate_stream`.
-- Real provider implementations under `agentcore.providers`:
+- Real provider implementations under `marrow.providers`:
   - `OpenAIProvider` — Chat Completions API with streaming.
   - `AnthropicProvider` — Messages API with `cache_control: ephemeral` on system prompts (prompt caching).
   - `OllamaProvider` — local daemon at `http://localhost:11434`, no API key.
-- Optional install extras: `agentcore[openai]`, `agentcore[anthropic]`, `agentcore[ollama]`, `agentcore[all]`.
+- Optional install extras: `marrow-rt[openai]`, `marrow-rt[anthropic]`, `marrow-rt[ollama]`, `marrow-rt[all]`.
 - GitHub Actions workflows:
   - `ci.yml` — pytest matrix on Linux / macOS / Windows × Python 3.9–3.12, plus example smoke runs.
   - `wheels.yml` — `cibuildwheel` on `v*` tags or manual dispatch.

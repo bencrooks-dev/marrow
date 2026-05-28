@@ -1,17 +1,17 @@
 # Observability
 
-`agentcore` exposes three hooks for production observability:
+`marrow` exposes three hooks for production observability:
 
 - **`TraceSink`** — emit spans around `agent.step`, `provider.generate`, `tool.invoke`.
 - **`UsageTracker`** — count tokens and estimate cost per agent and per model.
-- **Structured logging** — opt-in JSON-line output via `agentcore.logging_config`.
+- **Structured logging** — opt-in JSON-line output via `marrow.logging_config`.
 
 ## Tracing
 
 The default sink is `NullTraceSink` (zero overhead). For development, use `PrintTraceSink`:
 
 ```python
-from agentcore import PrintTraceSink, Runtime
+from marrow import PrintTraceSink, Runtime
 
 rt = Runtime(trace_sink=PrintTraceSink())
 ```
@@ -20,7 +20,7 @@ For production, wrap an OpenTelemetry tracer:
 
 ```python
 from opentelemetry import trace
-from agentcore import OpenTelemetryTraceSink, Runtime
+from marrow import OpenTelemetryTraceSink, Runtime
 
 tracer = trace.get_tracer("my-app")
 rt = Runtime(trace_sink=OpenTelemetryTraceSink(tracer))
@@ -31,7 +31,7 @@ Spans currently emitted by the SDK: `agent.step`. Adding more spans in C++ is a 
 ## Usage tracking
 
 ```python
-from agentcore import Runtime, UsageTracker
+from marrow import Runtime, UsageTracker
 
 usage = UsageTracker()
 rt = Runtime(usage=usage)
@@ -56,15 +56,15 @@ usage = UsageTracker(pricing={
 ## Structured logging
 
 ```python
-import agentcore.logging_config as lc
+import marrow.logging_config as lc
 lc.configure_json(level="INFO")
 
 import logging
-logging.getLogger("agentcore").info("started", extra={"agent": "alice"})
+logging.getLogger("marrow").info("started", extra={"agent": "alice"})
 ```
 
 Output:
 
 ```json
-{"ts": 1716750000.123, "level": "INFO", "logger": "agentcore", "msg": "started", "agent": "alice"}
+{"ts": 1716750000.123, "level": "INFO", "logger": "marrow", "msg": "started", "agent": "alice"}
 ```

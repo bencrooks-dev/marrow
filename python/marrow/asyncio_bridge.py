@@ -19,7 +19,7 @@ from functools import partial
 from typing import Any, Callable
 
 _DEFAULT_EXECUTOR = concurrent.futures.ThreadPoolExecutor(
-    max_workers=8, thread_name_prefix="agentcore-async"
+    max_workers=8, thread_name_prefix="marrow-async"
 )
 
 

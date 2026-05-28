@@ -1,6 +1,6 @@
 """Anthropic provider — Messages API with streaming + prompt caching.
 
-Requires: ``pip install 'agentcore[anthropic]'``
+Requires: ``pip install 'marrow-rt[anthropic]'``
 
 System prompts are sent with ``cache_control: ephemeral`` so repeat
 calls in an agent loop benefit from Anthropic's prompt caching
@@ -13,7 +13,7 @@ import os
 
 from anthropic import Anthropic
 
-from .. import _agentcore as _c
+from .. import _marrow as _c
 from ..sdk import PyProviderBase, raise_if_cancelled, request_timeout_seconds
 
 _CHAT_ROLE_MAP = {

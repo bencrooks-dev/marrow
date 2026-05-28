@@ -5,7 +5,7 @@ Tools are Python callables that an agent can invoke. The **registry and dispatch
 ## Define a tool
 
 ```python
-from agentcore import tool, ToolBox
+from marrow import tool, ToolBox
 
 @tool(description="Multiply two integers.")
 def multiply(a: int, b: int) -> int:
@@ -15,7 +15,7 @@ def multiply(a: int, b: int) -> int:
 ## Register and invoke
 
 ```python
-from agentcore import Runtime
+from marrow import Runtime
 
 rt = Runtime()
 ToolBox().add(multiply).bind(rt)
@@ -62,7 +62,7 @@ Tool exceptions are caught and returned to the LLM as `{"ok": false, "error": ".
 Customize the redactor:
 
 ```python
-from agentcore import ToolBox
+from marrow import ToolBox
 
 def my_redactor(exc: BaseException) -> str:
     return type(exc).__name__       # drop everything but the exception type
@@ -72,4 +72,4 @@ ToolBox(error_redactor=my_redactor).add(multiply).bind(rt)
 
 ## Size caps
 
-`agentcore.tools.MAX_TOOL_ARGS_BYTES` (default 1 MiB) and `MAX_TOOL_RESULT_BYTES` (default 4 MiB) cap input and output. Override at the module level if your workload needs different limits — there is no per-tool cap yet.
+`marrow.tools.MAX_TOOL_ARGS_BYTES` (default 1 MiB) and `MAX_TOOL_RESULT_BYTES` (default 4 MiB) cap input and output. Override at the module level if your workload needs different limits — there is no per-tool cap yet.

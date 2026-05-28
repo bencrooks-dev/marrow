@@ -1,13 +1,13 @@
 """Real provider — Anthropic. Requires ANTHROPIC_API_KEY.
 
-    pip install 'agentcore[anthropic]'
+    pip install 'marrow-rt[anthropic]'
     ANTHROPIC_API_KEY=sk-ant-... python examples/anthropic_example.py
 """
 import os
 import sys
 
-from agentcore import Agent, Runtime
-from agentcore.providers import AnthropicProvider
+from marrow import Agent, Runtime
+from marrow.providers import AnthropicProvider
 
 
 def main() -> None:

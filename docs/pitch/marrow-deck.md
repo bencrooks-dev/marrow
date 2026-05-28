@@ -3,7 +3,7 @@ marp: true
 theme: default
 paginate: true
 size: 16:9
-header: "agentcore · ARI — the Agent Runtime Interface"
+header: "marrow · ARI — the Agent Runtime Interface"
 footer: "Pre-alpha · 0.1.0 · Confidential"
 ---
 
@@ -20,14 +20,14 @@ HONESTY NOTES FOR THE PRESENTER (delete before sending):
   deployment, not yet a reference customer. Represent stage honestly.
 -->
 
-# agentcore
+# marrow
 
 ## The embeddable agent runtime — and the reference implementation of **ARI**, the Agent Runtime Interface
 
 The runtime layer for AI agents that run **where you can't ship Python**:
 robots, edge devices, and native applications.
 
-Presented by **[Your Name]**, Founder — `[email]` · `github.com/bencrooks-dev/agentcore`
+Presented by **[Your Name]**, Founder — `[email]` · `github.com/bencrooks-dev/marrow`
 
 *pre-alpha · 2026 · replace bracketed fields before sending*
 
@@ -80,14 +80,14 @@ Every mature agent framework — **LangChain, LangGraph, CrewAI, AutoGen** — i
 
 ## What we built
 
-**agentcore** — a native **C++17** agent runtime (state · provider · tools · routing · lifecycle), embeddable with zero managed runtime, ergonomic from Python.
+**marrow** — a native **C++17** agent runtime (state · provider · tools · routing · lifecycle), embeddable with zero managed runtime, ergonomic from Python.
 
 It is the **reference implementation of ARI** — an open standard for the agent runtime layer.
 
 ```
 A2A   — agent-to-agent (across hosts)
 MCP   — tool / context exchange         ← 97M+ SDK downloads/mo, now Linux Foundation
-ARI   — the runtime that runs a turn    ← agentcore implements this
+ARI   — the runtime that runs a turn    ← marrow implements this
 Model provider (OpenAI / Anthropic / local)
 ```
 
@@ -100,7 +100,7 @@ Model provider (OpenAI / Anthropic / local)
 The durable move (OpenStack, Open Compute, POSIX): **own the standard AND its reference implementation.**
 
 1. **The spec** — ARI, a language-neutral contract (shipped, v0.1)
-2. **The reference implementation** — agentcore (shipped)
+2. **The reference implementation** — marrow (shipped)
 3. **The conformance kit** — makes "ARI-conformant" *falsifiable* by anyone (shipped)
 4. **A security baseline** — STRIDE threat model + hardening + CI scanning (shipped)
 
@@ -138,7 +138,7 @@ Bolder framing: Morgan Stanley models a **~$5T humanoid market by 2050** *(diffe
 ## Traction & status (honest)
 
 **Shipped:**
-- ARI spec v0.1 + reference implementation (agentcore, 0.1.0)
+- ARI spec v0.1 + reference implementation (marrow, 0.1.0)
 - Conformance kit (falsifiable conformance)
 - STRIDE threat model + security hardening + CI security scanning
 
@@ -201,7 +201,7 @@ Bolder framing: Morgan Stanley models a **~$5T humanoid market by 2050** *(diffe
 - The runtime layer is **unclaimed** — MCP took tools, A2A took messaging, **no one owns the embeddable runtime**
 - Standards get set early. **The window is open now.**
 
-**agentcore — the runtime you embed where Python can't go.**
+**marrow — the runtime you embed where Python can't go.**
 
 `[SUPPLY THIS: contact / next step]`
 

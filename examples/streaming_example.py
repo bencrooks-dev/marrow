@@ -1,7 +1,7 @@
 """Streaming — MockProvider emits word-sized chunks."""
 import sys
 
-from agentcore import Agent, MockProvider, Runtime
+from marrow import Agent, MockProvider, Runtime
 
 
 def main() -> None:

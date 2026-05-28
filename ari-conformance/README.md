@@ -19,7 +19,7 @@ box in its [Appendix B checklist](../ARI-SPEC.md#appendix-b-conformance-checklis
 | `test_ari_embedded_runtime.py` | ARI-Embedded runtime checks (§10.2) | yes |
 | `test_ari_embedded_structural.py` | ARI-Embedded structural checks (§10.2) | **no** |
 
-Tests that need the compiled `agentcore` extension `importorskip` it, so the
+Tests that need the compiled `marrow` extension `importorskip` it, so the
 **structural** checks (no managed-runtime dependency in the core, near-zero
 dependency footprint, embeddable C++ example present) run anywhere — even on a
 machine with no C++ toolchain.
@@ -49,6 +49,6 @@ Do **not** advertise "ARI-compatible" without a named profile and version.
 
 ## Status
 
-Kit v0.1. The reference implementation (`agentcore`) is the first runtime under
+Kit v0.1. The reference implementation (`marrow`) is the first runtime under
 test. Until a green run is confirmed in CI, the CI job is marked
 `continue-on-error` (informational) — flip it to a hard gate once validated.

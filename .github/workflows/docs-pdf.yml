@@ -33,13 +33,13 @@ jobs:
 
       - name: Render pitch deck (Marp)
         run: |
-          npx -y @marp-team/marp-cli@latest docs/pitch/agentcore-deck.md \
-            --pdf --allow-local-files -o docs/pdf/agentcore-deck.pdf
+          npx -y @marp-team/marp-cli@latest docs/pitch/marrow-deck.md \
+            --pdf --allow-local-files -o docs/pdf/marrow-deck.pdf
 
       - name: Upload PDFs as build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: agentcore-pdfs
+          name: marrow-pdfs
           path: docs/pdf/*.pdf
           if-no-files-found: error
 

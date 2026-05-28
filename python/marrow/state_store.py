@@ -6,7 +6,7 @@ Provides a :class:`StateStore` Protocol with two concrete implementations:
   behind the same interface so swapping is trivial.
 - :class:`SQLiteStateStore` — durable; survives process restart.
 
-A store snapshots an :class:`agentcore.AgentState` to its backend and
+A store snapshots an :class:`marrow.AgentState` to its backend and
 loads it back later. Callers handle the lifecycle (when to snapshot,
 when to load on startup, when to garbage-collect).
 """
@@ -19,7 +19,7 @@ from collections.abc import Iterable
 from pathlib import Path
 from typing import Protocol, runtime_checkable
 
-from . import _agentcore as _c
+from . import _marrow as _c
 
 
 def _msg_to_dict(m: _c.Message) -> dict:

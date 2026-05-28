@@ -13,7 +13,7 @@ def main() -> None:
     p.add_argument("--json", help="write summary as JSON to this path")
     args = p.parse_args()
 
-    print_header(f"agentcore benchmark suite ({platform.system()} {platform.machine()})")
+    print_header(f"marrow benchmark suite ({platform.system()} {platform.machine()})")
     results = micro.run_all()
     e2e_result = e2e.run_pipeline(5_000)
     results.append(e2e_result)

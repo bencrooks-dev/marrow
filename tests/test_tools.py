@@ -4,8 +4,8 @@ from typing import Optional
 
 import pytest
 
-from agentcore import Runtime, ToolBox, tool
-from agentcore.tools import MAX_TOOL_ARGS_BYTES
+from marrow import Runtime, ToolBox, tool
+from marrow.tools import MAX_TOOL_ARGS_BYTES
 
 
 @tool(name="multiply", description="multiply two integers")

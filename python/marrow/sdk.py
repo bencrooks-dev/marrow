@@ -1,10 +1,10 @@
-"""High-level Python SDK over the agentcore C++ engine."""
+"""High-level Python SDK over the marrow C++ engine."""
 from __future__ import annotations
 
 from dataclasses import dataclass, field
 from typing import Protocol
 
-from . import _agentcore as _c
+from . import _marrow as _c
 from .policy import RateLimiter, RetryPolicy
 from .tracing import TraceSink, get_default_sink
 from .usage import UsageRecord, UsageTracker

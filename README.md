@@ -1,13 +1,13 @@
 <div align="center">
 
-# agentcore
+# marrow
 
 **The embeddable agent runtime — for robots, edge devices, and native apps where you can't ship Python.**
 
 *Reference implementation of **[ARI](ARI-SPEC.md)**, the Agent Runtime Interface.*
 
-[![CI](https://github.com/bencrooks-dev/agentcore/actions/workflows/ci.yml/badge.svg)](https://github.com/bencrooks-dev/agentcore/actions/workflows/ci.yml)
-[![Wheels](https://github.com/bencrooks-dev/agentcore/actions/workflows/wheels.yml/badge.svg)](https://github.com/bencrooks-dev/agentcore/actions/workflows/wheels.yml)
+[![CI](https://github.com/bencrooks-dev/marrow/actions/workflows/ci.yml/badge.svg)](https://github.com/bencrooks-dev/marrow/actions/workflows/ci.yml)
+[![Wheels](https://github.com/bencrooks-dev/marrow/actions/workflows/wheels.yml/badge.svg)](https://github.com/bencrooks-dev/marrow/actions/workflows/wheels.yml)
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 [![Python 3.9+](https://img.shields.io/badge/python-3.9%20%7C%203.10%20%7C%203.11%20%7C%203.12-blue.svg)](pyproject.toml)
 [![C++17](https://img.shields.io/badge/C%2B%2B-17-00599C.svg)](src/core/engine.hpp)
@@ -17,7 +17,7 @@
 
 ---
 
-`agentcore` is a native **C++17 agent runtime** — the loop that holds conversation
+`marrow` is a native **C++17 agent runtime** — the loop that holds conversation
 state, calls a model, dispatches tools, and routes messages between agents — with
 an ergonomic Python binding on top. It is the **reference implementation of
 [ARI](ARI-SPEC.md)**, a language-neutral contract for the agent *runtime* layer.
@@ -31,7 +31,7 @@ out of a fast-growing class of deployments:
 - **Native applications** — game engines, audio/DSP, trading systems — that need an
   agent loop without shipping a Python runtime to the customer.
 
-agentcore targets exactly that lane: a native core you can **embed without a managed
+marrow targets exactly that lane: a native core you can **embed without a managed
 runtime**, with bounded memory and no hot-path allocation (the **ARI-Embedded**
 profile). The C++ core compiles as a standalone library; the Python binding is a
 convenience, not a requirement. Real providers (OpenAI, Anthropic, Ollama) ship as
@@ -42,7 +42,7 @@ thin Python subclasses that hook back into the core through a trampoline.
 ```
 A2A   — agent-to-agent messaging (across hosts)
 MCP   — tool / context exchange (model ↔ world)
-ARI   — the runtime that runs a turn   ◀── agentcore implements this
+ARI   — the runtime that runs a turn   ◀── marrow implements this
         (state · provider · tools · routing)
 Model provider (OpenAI / Anthropic / local)
 ```
@@ -65,7 +65,7 @@ See **[ARI-SPEC.md](ARI-SPEC.md)** for the contract and **[docs/ari-strategy.md]
 - **Backpressure** — `Router.set_inbox_limit(agent_id, max_size, policy)` with three policies (`Reject` / `DropOldest` / `DropNewest`).
 - **Graceful shutdown** — `Runtime.shutdown()` blocks new agent creation; in-flight work finishes.
 - **Persistence** — `StateStore` interface with `InMemoryStateStore` and `SQLiteStateStore`. Restart your app, resume your conversations.
-- **Observability** — `TraceSink` Protocol with `NullTraceSink` / `PrintTraceSink` / `OpenTelemetryTraceSink`. Structured logging via `agentcore.logging_config`.
+- **Observability** — `TraceSink` Protocol with `NullTraceSink` / `PrintTraceSink` / `OpenTelemetryTraceSink`. Structured logging via `marrow.logging_config`.
 - **Usage tracking + cost estimation** — `UsageTracker` aggregates tokens per agent + model with configurable pricing tables.
 - **Retry + rate limiting** — `RetryPolicy` (exponential backoff with jitter) and `RateLimiter` (token bucket); configure once on the `Runtime` and every agent inherits them.
 - **Tools dispatched from C++** — Registry lookup and dispatch in native code; tool bodies stay in Python. Tool errors are redacted; args and results have configurable size caps.
@@ -87,13 +87,13 @@ See **[ARI-SPEC.md](ARI-SPEC.md)** for the contract and **[docs/ari-strategy.md]
 └──────────────────────────────┬─────────────────────────────────────┘
                                │
 ┌──────────────────────────────▼─────────────────────────────────────┐
-│                  Python SDK  (agentcore.sdk)                       │
+│                  Python SDK  (marrow.sdk)                       │
 │    Agent · Runtime · ToolBox · Graph · AsyncRuntime · @tool        │
 └──────────────────────────────┬─────────────────────────────────────┘
                                │   (Pybind11 — releases GIL on
                                │    blocking provider calls)
 ┌──────────────────────────────▼─────────────────────────────────────┐
-│                C++ engine  (libagentcore_core)                     │
+│                C++ engine  (libmarrow_core)                     │
 │                                                                    │
 │    ┌──────────────┐    ┌──────────────┐    ┌──────────────┐        │
 │    │   Engine     │───▶│ AgentRouter  │◀──▶│ AgentState[] │        │
@@ -120,16 +120,16 @@ See **[ARI-SPEC.md](ARI-SPEC.md)** for the contract and **[docs/ari-strategy.md]
 |---|---|---|
 | C++ core | `Message`, `AgentState`, `MemoryCache`, `AgentRouter`, `ToolRegistry`, `Engine`, `Provider` interface | `src/core/engine.{hpp,cpp}` |
 | Bindings | Pybind11 module, `PyProvider` trampoline, GIL release on hot paths | `src/bindings/bindings.cpp` |
-| Python SDK | `Agent`, `Runtime`, `Graph`, `ToolBox`, `AsyncRuntime` | `python/agentcore/` |
-| Providers | `OpenAIProvider`, `AnthropicProvider`, `OllamaProvider` (optional extras) | `python/agentcore/providers/` |
+| Python SDK | `Agent`, `Runtime`, `Graph`, `ToolBox`, `AsyncRuntime` | `python/marrow/` |
+| Providers | `OpenAIProvider`, `AnthropicProvider`, `OllamaProvider` (optional extras) | `python/marrow/providers/` |
 
 See [`docs/design-notes.md`](docs/design-notes.md) for the design rationale and deliberate trade-offs.
 
 ---
 
-## How agentcore compares
+## How marrow compares
 
-| | **agentcore** | LangGraph | CrewAI | AutoGen |
+| | **marrow** | LangGraph | CrewAI | AutoGen |
 |---|---|---|---|---|
 | Native hot path | **C++17** | Python | Python | Python |
 | GIL released during providers | **yes** | partial | no | no |
@@ -143,21 +143,21 @@ See [`docs/design-notes.md`](docs/design-notes.md) for the design rationale and 
 
 Read this honestly: LangGraph / CrewAI / AutoGen are mature, supported, and have far
 more features today, and for a server-side Python app you should probably use one of
-them. `agentcore` is not trying to win that comparison on features or on raw speed —
+them. `marrow` is not trying to win that comparison on features or on raw speed —
 if your bottleneck is network I/O (it usually is, server-side), the speedup is modest.
 
 The row that matters is the last one: **Embeddable without a Python runtime.** That is
 a structural property the others can't offer without ceasing to be Python frameworks —
 and it's the whole point. If you're putting an agent loop inside a **robot, a drone, an
 edge device, or a native C++ application**, the Python frameworks aren't an option and
-agentcore is. That lane — the **[ARI-Embedded](ARI-SPEC.md#102-ari-embedded)** profile —
-is what agentcore is built to own.
+marrow is. That lane — the **[ARI-Embedded](ARI-SPEC.md#102-ari-embedded)** profile —
+is what marrow is built to own.
 
 ---
 
 ## Conformance
 
-agentcore is the reference implementation of [ARI](ARI-SPEC.md), and it's held to
+marrow is the reference implementation of [ARI](ARI-SPEC.md), and it's held to
 the spec by an executable **conformance kit** in [`ari-conformance/`](ari-conformance/).
 Each test maps to a numbered ARI requirement, so "conformant" is *falsifiable*, not
 a marketing claim.
@@ -185,10 +185,10 @@ pip install -e .
 With real providers:
 
 ```bash
-pip install 'agentcore[openai]'      # OpenAI Chat Completions
-pip install 'agentcore[anthropic]'   # Anthropic Messages + prompt caching
-pip install 'agentcore[ollama]'      # local Ollama daemon
-pip install 'agentcore[all]'         # everything above
+pip install 'marrow-rt[openai]'      # OpenAI Chat Completions
+pip install 'marrow-rt[anthropic]'   # Anthropic Messages + prompt caching
+pip install 'marrow-rt[ollama]'      # local Ollama daemon
+pip install 'marrow-rt[all]'         # everything above
 ```
 
 The `wheels.yml` workflow builds Linux / macOS / Windows × Python 3.9–3.12 wheels and uploads them as GitHub artifacts on `v*` tag pushes. PyPI publishing is **not** yet wired up; install via git or the artifact downloads until v0.1.
@@ -198,7 +198,7 @@ The `wheels.yml` workflow builds Linux / macOS / Windows × Python 3.9–3.12 wh
 ## Quickstart
 
 ```python
-from agentcore import Agent, Runtime, MockProvider
+from marrow import Agent, Runtime, MockProvider
 
 rt = Runtime()
 provider = MockProvider()
@@ -221,8 +221,8 @@ print(writer.step())
 ### Real providers
 
 ```python
-from agentcore import Agent, Runtime
-from agentcore.providers import AnthropicProvider
+from marrow import Agent, Runtime
+from marrow.providers import AnthropicProvider
 
 rt = Runtime()
 provider = AnthropicProvider(model="claude-sonnet-4-6")  # caches system prompt
@@ -244,7 +244,7 @@ Works identically for `OpenAIProvider`, `AnthropicProvider`, `OllamaProvider`, `
 ### Tools
 
 ```python
-from agentcore import Runtime, ToolBox, tool
+from marrow import Runtime, ToolBox, tool
 
 @tool(description="Add two integers")
 def add(a: int, b: int) -> int:
@@ -262,7 +262,7 @@ JSON-schema is auto-generated from annotations for the common cases — primitiv
 ### Multi-agent graphs
 
 ```python
-from agentcore import Graph, run_graph
+from marrow import Graph, run_graph
 
 g = (Graph()
      .start("researcher")
@@ -279,7 +279,7 @@ Fluent, introspectable, no YAML. See [design-notes](docs/design-notes.md#2-yamlj
 
 ```python
 import asyncio
-from agentcore import AsyncRuntime, Agent, MockProvider, Runtime
+from marrow import AsyncRuntime, Agent, MockProvider, Runtime
 
 async def main():
     rt = AsyncRuntime(Runtime())
@@ -330,7 +330,7 @@ C++ core builds and runs on Linux / macOS / Windows × Python 3.9–3.12. The
 architecture has been pressure-tested and the controversial trade-offs are
 documented in [`docs/design-notes.md`](docs/design-notes.md).
 
-Against the [ARI](ARI-SPEC.md) profiles, agentcore currently targets **ARI-Core**
+Against the [ARI](ARI-SPEC.md) profiles, marrow currently targets **ARI-Core**
 and **ARI-Embedded** (with **ARI-Server** features present but not yet soak-tested).
 
 What is shipped and stable:
@@ -371,11 +371,11 @@ What is **not** done and should not yet be relied on:
 
 ## License
 
-`agentcore` is licensed under the **Apache License, Version 2.0**. The full text is in [`LICENSE`](LICENSE) and required attribution is in [`NOTICE`](NOTICE).
+`marrow` is licensed under the **Apache License, Version 2.0**. The full text is in [`LICENSE`](LICENSE) and required attribution is in [`NOTICE`](NOTICE).
 
 ### Why Apache 2.0?
 
-Picked over MIT specifically for the **explicit patent grant in §3** — contributors grant a perpetual, worldwide, royalty-free patent license to users for any patents reading on their contributions. This protects downstream commercial adopters from patent ambushes by contributors. Picked over GPL because `agentcore` is intended to be embedded in proprietary products without forcing them to be open-sourced.
+Picked over MIT specifically for the **explicit patent grant in §3** — contributors grant a perpetual, worldwide, royalty-free patent license to users for any patents reading on their contributions. This protects downstream commercial adopters from patent ambushes by contributors. Picked over GPL because `marrow` is intended to be embedded in proprietary products without forcing them to be open-sourced.
 
 ### What the license permits
 
@@ -383,31 +383,31 @@ Picked over MIT specifically for the **explicit patent grant in §3** — contri
 - **Modification** and creation of derivative works
 - **Distribution** of source and binary forms
 - **Private use** without disclosure
-- **Sublicensing** under different terms (e.g. a downstream MIT package can include agentcore)
+- **Sublicensing** under different terms (e.g. a downstream MIT package can include marrow)
 
 ### What you must do
 
-- **Preserve** the copyright and license notice in source distributions of agentcore code
+- **Preserve** the copyright and license notice in source distributions of marrow code
 - **Carry forward** the contents of `NOTICE` in derivative distributions, where applicable
 - **State modifications** if you redistribute a modified version (Apache §4(b))
-- **Not use** "agentcore" as the primary brand of a competing or derivative product (see *Trademark* below). The Apache license does *not* grant trademark rights.
+- **Not use** "marrow" as the primary brand of a competing or derivative product (see *Trademark* below). The Apache license does *not* grant trademark rights.
 
 ### What you do not get
 
-- Warranty of any kind — `agentcore` is provided "AS IS" (Apache §7)
+- Warranty of any kind — `marrow` is provided "AS IS" (Apache §7)
 - Liability — contributors are not liable for damages from use (Apache §8)
 - Trademark license — see below
 
 ### Trademark
 
-The name "agentcore" is not currently a registered trademark. We ask the community to:
+The name "marrow" is not currently a registered trademark. We ask the community to:
 
-- **Welcome:** use the name to describe integrations, plugins, or compatible implementations ("X for agentcore", "agentcore-compatible Y")
-- **Avoid:** using "agentcore" as the primary brand of a competing or derivative product to prevent user confusion
+- **Welcome:** use the name to describe integrations, plugins, or compatible implementations ("X for marrow", "marrow-compatible Y")
+- **Avoid:** using "marrow" as the primary brand of a competing or derivative product to prevent user confusion
 
 ### Patent statement
 
-By contributing to `agentcore`, you grant — under Apache §3 — a perpetual, worldwide, non-exclusive, no-charge, royalty-free, irrevocable (except as stated) patent license to make, have made, use, offer to sell, sell, import, and otherwise transfer the work, where such license applies only to those patent claims licensable by you that are necessarily infringed by your contribution alone or in combination with the work.
+By contributing to `marrow`, you grant — under Apache §3 — a perpetual, worldwide, non-exclusive, no-charge, royalty-free, irrevocable (except as stated) patent license to make, have made, use, offer to sell, sell, import, and otherwise transfer the work, where such license applies only to those patent claims licensable by you that are necessarily infringed by your contribution alone or in combination with the work.
 
 If any entity institutes patent litigation against another entity claiming the work infringes their patents, all patent licenses granted to that entity under this License terminate as of the filing date.
 
@@ -427,7 +427,7 @@ By submitting a PR you confirm — under Apache §5 — that your contribution i
 - [scikit-build-core](https://github.com/scikit-build/scikit-build-core) — modern CMake-driven Python builds.
 - [cibuildwheel](https://github.com/pypa/cibuildwheel) — wheels for every platform with one workflow.
 
-Inspiration from LangGraph, CrewAI, AutoGen, and the broader open-source agent ecosystem — `agentcore` is an alternative, not a replacement.
+Inspiration from LangGraph, CrewAI, AutoGen, and the broader open-source agent ecosystem — `marrow` is an alternative, not a replacement.
 
 ---
 

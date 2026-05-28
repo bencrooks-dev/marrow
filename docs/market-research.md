@@ -1,4 +1,4 @@
-# agentcore — Market Research
+# marrow — Market Research
 
 > Compiled May 2026. Every figure below carries a named source, year, and URL. Where sources
 > disagree, the range is shown and noted. Items with no credible figure are explicitly marked
@@ -72,7 +72,7 @@ above plus the edge AI / TinyML markets (sections 2 and 4). Flag this explicitly
 - **IoT install base context** — ~21.1B connected IoT devices by end of 2025 (~14% YoY growth) — Source: cited in TinyML market coverage, 2025, https://www.datamintelligence.com/research-report/tinyml-market (secondary; original is IoT Analytics — verify before slide use)
 
 **Range note:** TinyML/edge-inference is small in absolute dollars today (~USD 1.5B) but one of the
-faster-growing slices (CAGR 20–38%). This is the most on-thesis market for agentcore's wedge, but
+faster-growing slices (CAGR 20–38%). This is the most on-thesis market for marrow's wedge, but
 the absolute TAM is modest — frame it as "fast-growing enabling layer," not a giant TAM.
 
 ---
@@ -87,9 +87,9 @@ across reporting sources — ranges shown where they conflict.
 - **CrewAI — ~44,300 GitHub stars; ~5.2M PyPI downloads/month** — Source: framework-comparison coverage, 2026, https://www.buildmvpfast.com/blog/langgraph-vs-crewai-vs-autogen-swarms-agent-framework-2026
 - **AutoGen (Microsoft) — ~54,000 GitHub stars before merge into the unified Microsoft Agent Framework; ~1.3M PyPI downloads/month** — Source: framework-comparison coverage, 2026, https://www.buildmvpfast.com/blog/langgraph-vs-crewai-vs-autogen-swarms-agent-framework-2026
 
-**Key insight (defensible, supports the agentcore thesis):** Stars and downloads tell different
+**Key insight (defensible, supports the marrow thesis):** Stars and downloads tell different
 stories — LangGraph leads actual production usage (~38.8M downloads/mo, ~30x AutoGen) despite fewer
-stars. **All four incumbents are Python.** This is the gap agentcore targets (native C++ runtime).
+stars. **All four incumbents are Python.** This is the gap marrow targets (native C++ runtime).
 
 **Confidence note:** LangChain's own star count is solid (first-party repo). LangGraph/CrewAI/AutoGen
 download counts come from a third-party comparison blog, NOT from PyPIStats/pepy.tech directly —
@@ -99,7 +99,7 @@ treat as directionally correct, verify exact numbers at pepy.tech before quoting
 
 ## 6. MCP (Model Context Protocol) adoption signals since late-2024 launch
 
-Qualitative + quantitative. MCP is complementary to agentcore (agentcore is the runtime layer; MCP
+Qualitative + quantitative. MCP is complementary to marrow (marrow is the runtime layer; MCP
 is the tool-connection layer), so strong MCP adoption is a tailwind, not a competitor.
 
 - **97M+ monthly SDK downloads** across all languages (reported Dec 2025) — Source: Anthropic, reported Dec 2025, via https://guptadeepak.com/the-complete-guide-to-model-context-protocol-mcp-enterprise-adoption-market-trends-and-implementation-strategies/ (secondary citation of Anthropic figure — verify against Anthropic primary)
@@ -118,7 +118,7 @@ active servers (Dec 2025).
 ## 7. AI-developer population & enterprises running agents in production
 
 - **AI agents in production — 57% of respondents have agents in production** (2025 survey of 1,340 respondents, Nov 18–Dec 2 2025); up from 51% in the 2024 survey — Source: LangChain "State of AI Agents" / "State of Agent Engineering," 2025, https://www.langchain.com/stateofaiagents and https://www.langchain.com/state-of-agent-engineering
-- **Latency is the #2 production challenge (20%)**, behind quality (32%) — Source: LangChain State of AI Agents, 2025, https://www.langchain.com/stateofaiagents (directly supports agentcore's latency thesis)
+- **Latency is the #2 production challenge (20%)**, behind quality (32%) — Source: LangChain State of AI Agents, 2025, https://www.langchain.com/stateofaiagents (directly supports marrow's latency thesis)
 - **Enterprise agent maturity — 62% of organizations experimenting with AI agents, only 23% scaling them** — Source: McKinsey / State of AI 2025 (as reported), 2025, https://www.mckinsey.com/capabilities/quantumblack/our-insights/the-state-of-ai
 - **AI-developer population — 17.4M developers using AI/ML tools** (up from 15.5M in 2023), ~64% of all developers; total developer community ~27M (2024) — Source: derived from Stack Overflow / SlashData-style coverage, 2025, https://blog.arcade.dev/global-ai-developer-community-statistics (secondary aggregation — see caveats)
 - **84% of developers use or plan to use AI tools; 51% of professional devs use AI daily** — Source: Stack Overflow Developer Survey 2025, https://survey.stackoverflow.co/2025/ai/
@@ -128,7 +128,7 @@ active servers (Dec 2025).
 
 ## 8. Real-time / latency constraints making Python unsuitable for robots/edge ("can't ship Python into a robot")
 
-Best available cited support for the core agentcore thesis. Mix of engineering commentary and
+Best available cited support for the core marrow thesis. Mix of engineering commentary and
 academic feasibility studies. None is a single authoritative "you can't ship Python" quote from a
 top-tier analyst — it's an engineering consensus, cited below.
 

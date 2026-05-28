@@ -2,7 +2,7 @@
 import asyncio
 import time
 
-from agentcore import Agent, AsyncRuntime, MockProvider, Runtime
+from marrow import Agent, AsyncRuntime, MockProvider, Runtime
 
 
 async def main() -> None:

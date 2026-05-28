@@ -10,7 +10,7 @@
 ## Save / load
 
 ```python
-from agentcore import Agent, MockProvider, Runtime, SQLiteStateStore
+from marrow import Agent, MockProvider, Runtime, SQLiteStateStore
 
 store = SQLiteStateStore("./agents.db")
 
@@ -25,7 +25,7 @@ store.save("alice", agent._state)   # snapshot
 After a restart:
 
 ```python
-from agentcore import restore_into
+from marrow import restore_into
 
 rt = Runtime()
 rt.add(Agent("alice", MockProvider()))    # re-register agent
@@ -50,7 +50,7 @@ Backends that may be useful later: Redis, Postgres, S3 + JSON, anything with a k
 
 ## When to snapshot
 
-`agentcore` does not auto-snapshot. Decide based on your durability requirement:
+`marrow` does not auto-snapshot. Decide based on your durability requirement:
 
 - After every `step()` — strictest durability, highest write rate
 - Every N steps — cheaper, bounded loss window

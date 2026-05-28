@@ -1,4 +1,4 @@
-// agentcore — lightweight C++ core for AI agent orchestration.
+// marrow — lightweight C++ core for AI agent orchestration.
 // PoC. Not production-ready. See docs/design-notes.md.
 #pragma once
 
@@ -16,7 +16,7 @@
 #include <unordered_set>
 #include <vector>
 
-namespace agentcore {
+namespace marrow {
 
 // ---------- Message ----------
 
@@ -267,4 +267,4 @@ private:
     std::atomic<bool> shutdown_{false};
 };
 
-}  // namespace agentcore
+}  // namespace marrow

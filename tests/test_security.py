@@ -10,9 +10,9 @@ import threading
 
 import pytest
 
-agentcore = pytest.importorskip("agentcore")
+marrow = pytest.importorskip("marrow")
 
-from agentcore import (  # noqa: E402
+from marrow import (  # noqa: E402
     Agent,
     CancelToken,
     Message,
@@ -23,7 +23,7 @@ from agentcore import (  # noqa: E402
     ToolBox,
     tool,
 )
-from agentcore.tools import (  # noqa: E402
+from marrow.tools import (  # noqa: E402
     _default_error_redactor,
     strict_error_redactor,
 )

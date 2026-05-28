@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import io
 
-from agentcore import (
+from marrow import (
     Agent,
     GenerationResponse,
     MockProvider,

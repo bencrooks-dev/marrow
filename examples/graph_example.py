@@ -1,5 +1,5 @@
 """Graph builder — fluent multi-agent workflow, no YAML in sight."""
-from agentcore import Agent, Graph, MockProvider, Runtime, run_graph
+from marrow import Agent, Graph, MockProvider, Runtime, run_graph
 
 
 def main() -> None:
